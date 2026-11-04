@@ -148,7 +148,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '2 hr 45 min',
     elevation: '2,042 m',
     mapCoords: { x: 34, y: 64 },
-    image: '/assets/mte/1787721518_8653.webp',
+    image: '/assets/images/darjeeling.jpg',
     description:
       'World-renowned emerald tea estates, the UNESCO Darjeeling Himalayan Railway Toy Train, colonial heritage, and golden Kanchenjunga sunrises from Tiger Hill.'
   },
@@ -165,7 +165,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '4 hr 15 min',
     elevation: '1,650 m – 4,310 m',
     mapCoords: { x: 52, y: 42 },
-    image: '/assets/mte/1787721658_6328.webp',
+    image: '/assets/images/sikkim.jpg',
     description:
       'Vibrant Gangtok promenades, glacial Tsomgo Lake, historic Nathula Pass, ancient Buddhist monasteries, and pristine alpine valleys.'
   },
@@ -182,7 +182,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '3 hr 50 min',
     elevation: '2,200 m – 3,120 m',
     mapCoords: { x: 82, y: 52 },
-    image: '/assets/mte/1787721816_7818.webp',
+    image: '/assets/images/bhutan.jpg',
     description:
       'Majestic fortresses (Dzongs), peaceful valleys, Buddha Dordenma, Punakha Suspension Bridge, and the cliffside Tiger’s Nest Monastery in Paro.'
   },
@@ -199,7 +199,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '1 hr 35 min',
     elevation: '1,482 m',
     mapCoords: { x: 31, y: 74 },
-    image: '/assets/mte/1787721943_6219.webp',
+    image: '/assets/images/tea_tasting.jpg',
     description:
       'The Land of White Orchids featuring Eagle’s Crag viewpoints, Makaibari & Castleton tea estates, misty pine forests, and tranquil colonial charm.'
   },
@@ -216,7 +216,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '4 hr 50 min',
     elevation: '2,865 m – 3,413 m',
     mapCoords: { x: 64, y: 48 },
-    image: '/assets/mte/1787722180_8926.webp',
+    image: '/assets/images/silkroute.jpg',
     description:
       'Iconic 32-hairpin Thambi View Point loop on the historic Old Silk Route, Kupup Elephant Lake, Nathang Valley, and sweeping eastern Kanchenjunga panoramas.'
   },
@@ -233,7 +233,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '1 hr 50 min',
     elevation: '180 m – 650 m',
     mapCoords: { x: 60, y: 80 },
-    image: '/assets/mte/1787722202_7719.webp',
+    image: '/assets/images/dooars.jpg',
     description:
       'Lush sub-Himalayan floodplains, Gorumara & Jaldapara wildlife sanctuaries, river valleys of Murti and Jayanti, and sprawling tea gardens.'
   },
@@ -250,7 +250,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '7 hr 30 min',
     elevation: '2,750 m – 5,430 m',
     mapCoords: { x: 48, y: 18 },
-    image: '/assets/mte/1787324441_8786.webp',
+    image: '/assets/images/sikkim.jpg',
     description:
       'High-altitude mountain village and basecamp to the sacred turquoise waters of Gurudongmar Lake (17,800 ft) and Chopta Valley.'
   },
@@ -267,7 +267,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '2 hr 30 min',
     elevation: '1,250 m',
     mapCoords: { x: 46, y: 62 },
-    image: '/assets/mte/1786813822_5203.webp',
+    image: '/assets/images/gangtok_ropeway.jpg',
     description:
       'Panoramic Deolo Hill ridge, Durpin Dara monastery views over the Teesta River confluence, rare Himalayan orchid nurseries, and heritage bungalows.'
   },
@@ -284,7 +284,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '4 hr 00 min',
     elevation: '2,100 m',
     mapCoords: { x: 41, y: 46 },
-    image: '/assets/mte/1787468978_8353.webp',
+    image: '/assets/images/monastery.jpg',
     description:
       'Home to the monumental 130-foot Tathagata Tsal Buddha Park framed by snow-clad Maenam and Kabru peaks in serene South Sikkim.'
   },
@@ -301,7 +301,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '1 hr 45 min',
     elevation: '1,495 m',
     mapCoords: { x: 22, y: 70 },
-    image: '/assets/mte/1787468031_3276.webp',
+    image: '/assets/images/toy_train.jpg',
     description:
       'Tranquil Sumendu Lake spanned by an arching footbridge, ringed by Dhupi pine forests, orange orchards, and Indo-Nepal Pashupati border viewpoints.'
   },
@@ -318,7 +318,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '4 hr 40 min',
     elevation: '2,150 m',
     mapCoords: { x: 32, y: 38 },
-    image: '/assets/mte/1786814050_7010.webp',
+    image: '/assets/images/pelling.jpg',
     description:
       'Closest dramatic vantage point to Mount Kanchenjunga, Pemayangtse Monastery, Skywalk at Chenrezig, Rabdentse ruins, and Khecheopalri sacred lake.'
   },
@@ -335,7 +335,7 @@ export const DESTINATIONS: DestinationItem[] = [
     driveTime: '7 hr 15 min',
     elevation: '2,700 m – 4,660 m',
     mapCoords: { x: 58, y: 22 },
-    image: '/assets/mte/1786814082_6950.webp',
+    image: '/assets/images/sikkim.jpg',
     description:
       'Picturesque Tibetan-Sikkimese riverside village leading to Yumthang Valley of Rhododendrons and the snowfields of Zero Point (Yumesamdong).'
   }
@@ -361,11 +361,11 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 14,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1788271002_8852.jpeg',
+    image: '/assets/images/dooars.jpg',
     gallery: [
-      '/assets/mte/1788271002_8852.jpeg',
-      '/assets/mte/1787722202_7719.webp',
-      '/assets/sondaven/698ccba4d091bac674d376b5_%D0%B2%D0%BE%D0%B4%D0%BE%D1%81%D0%BF%D0%B0%D0%B4%20%D0%BF%D1%80%D0%BE%D0%B1%D1%96%D0%B8%CC%86%201.webp'
+      '/assets/images/dooars.jpg',
+      '/assets/images/dooars.jpg',
+      '/assets/images/gangtok_ropeway.jpg'
     ],
     overview:
       'Explore the lush emerald forests, river valleys, tea gardens, and wildlife sanctuaries of North Bengal on this curated 3 Nights / 4 Days Dooars expedition.',
@@ -429,11 +429,11 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 19,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787760429_1980.jpeg',
+    image: '/assets/images/darjeeling.jpg',
     gallery: [
-      '/assets/mte/1787760429_1980.jpeg',
-      '/assets/mte/1787721518_8653.webp',
-      '/assets/mte/1787721943_6219.webp'
+      '/assets/images/darjeeling.jpg',
+      '/assets/images/darjeeling.jpg',
+      '/assets/images/tea_tasting.jpg'
     ],
     overview:
       'A quintessential 4 Nights / 5 Days Himalayan heritage tour blending Kalimpong orchid viewpoints, Darjeeling’s iconic Tiger Hill sunrise and Toy Train, and misty Kurseong tea gardens.',
@@ -505,11 +505,11 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 21,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787392935_8147.jpg',
+    image: '/assets/images/sikkim.jpg',
     gallery: [
-      '/assets/mte/1787392935_8147.jpg',
-      '/assets/mte/1787324441_8786.webp',
-      '/assets/mte/1786814082_6950.webp'
+      '/assets/images/sikkim.jpg',
+      '/assets/images/sikkim.jpg',
+      '/assets/images/sikkim.jpg'
     ],
     overview:
       'Our flagship North & East Sikkim expedition covering Gangtok, Tsomgo Lake, Nathula Pass, Lachen, sacred Gurudongmar Lake (17,800 ft), Lachung, and Yumthang Valley of Flowers.',
@@ -597,11 +597,11 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 15,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787377115_1558.jpg',
+    image: '/assets/images/bhutan.jpg',
     gallery: [
-      '/assets/mte/1787377115_1558.jpg',
-      '/assets/mte/1787721816_7818.webp',
-      '/assets/mte/1788415057_8146.jpg'
+      '/assets/images/bhutan.jpg',
+      '/assets/images/bhutan.jpg',
+      '/assets/images/bhutan.jpg'
     ],
     overview:
       'Experience the magical beauty of Bhutan on a memorable 5 Nights & 6 Days journey covering 1 Night in Phuentsholing, 2 Nights in Thimphu, and 2 Nights in Paro with full permit assistance.',
@@ -681,11 +681,11 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 19,
     featured: false,
     bestSeller: true,
-    image: '/assets/mte/1787395617_7756.webp',
+    image: '/assets/images/silkroute.jpg',
     gallery: [
-      '/assets/mte/1787395617_7756.webp',
-      '/assets/mte/1787722180_8926.webp',
-      '/assets/mte/1787721518_8653.webp'
+      '/assets/images/silkroute.jpg',
+      '/assets/images/silkroute.jpg',
+      '/assets/images/darjeeling.jpg'
     ],
     overview:
       'Traverse the legendary Old Silk Route through Zuluk’s 32 hairpin bends, Thambi View Point, Kupup Lake, and combine it with classic Darjeeling views.',
@@ -752,8 +752,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 10,
     featured: false,
     bestSeller: true,
-    image: '/assets/mte/1787394377_5966.jpg',
-    gallery: ['/assets/mte/1787394377_5966.jpg', '/assets/mte/1786814050_7010.webp'],
+    image: '/assets/images/pelling.jpg',
+    gallery: ['/assets/images/pelling.jpg', '/assets/images/pelling.jpg'],
     overview:
       'A grand tri-circuit combining Darjeeling tea heritage, Pelling’s Skywalk and Kanchenjunga viewpoints, and the thrilling Zuluk Silk Route.',
     highlights: [
@@ -826,8 +826,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 19,
     featured: true,
     bestSeller: false,
-    image: '/assets/mte/1787392163_3418.webp',
-    gallery: ['/assets/mte/1787392163_3418.webp', '/assets/mte/1786813822_5203.webp'],
+    image: '/assets/images/tea_tasting.jpg',
+    gallery: ['/assets/images/tea_tasting.jpg', '/assets/images/gangtok_ropeway.jpg'],
     overview:
       'Discover the serene orchid nurseries and monasteries of Kalimpong paired with Darjeeling’s mountain vistas and Mirik Lake.',
     highlights: [
@@ -893,8 +893,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 20,
     featured: true,
     bestSeller: false,
-    image: '/assets/mte/1788415057_8146.jpg',
-    gallery: ['/assets/mte/1788415057_8146.jpg', '/assets/mte/1787377115_1558.jpg'],
+    image: '/assets/images/bhutan.jpg',
+    gallery: ['/assets/images/bhutan.jpg', '/assets/images/bhutan.jpg'],
     overview:
       'Focused 4 Nights / 5 Days cultural & trekking tour of Bhutan’s Paro and Thimphu valleys culminating at the cliffside Tiger’s Nest Monastery.',
     highlights: [
@@ -960,8 +960,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 25,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787376150_3137.webp',
-    gallery: ['/assets/mte/1787376150_3137.webp', '/assets/mte/1787721816_7818.webp'],
+    image: '/assets/images/bhutan.jpg',
+    gallery: ['/assets/images/bhutan.jpg', '/assets/images/bhutan.jpg'],
     overview:
       'A compact 3 Nights / 4 Days Bhutan getaway ideal for long weekends, covering Thimphu and Paro’s most iconic landmarks.',
     highlights: [
@@ -1020,8 +1020,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 17,
     featured: false,
     bestSeller: true,
-    image: '/assets/mte/1787375739_3193.jpg',
-    gallery: ['/assets/mte/1787375739_3193.jpg', '/assets/mte/1787721658_6328.webp'],
+    image: '/assets/images/gangtok_ropeway.jpg',
+    gallery: ['/assets/images/gangtok_ropeway.jpg', '/assets/images/sikkim.jpg'],
     overview:
       'Combine the best of East Sikkim (Gangtok & Tsomgo Lake) and the Queen of the Hills (Darjeeling) in a seamless 4 Nights / 5 Days itinerary.',
     highlights: [
@@ -1087,8 +1087,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 17,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787375054_9850.webp',
-    gallery: ['/assets/mte/1787375054_9850.webp', '/assets/mte/1787721518_8653.webp'],
+    image: '/assets/images/darjeeling.jpg',
+    gallery: ['/assets/images/darjeeling.jpg', '/assets/images/darjeeling.jpg'],
     overview:
       'A crisp 3 Nights / 4 Days Darjeeling escape centered around the legendary golden sunrise over Mount Kanchenjunga from Tiger Hill.',
     highlights: [
@@ -1147,8 +1147,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 10,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787374867_6311.jpeg',
-    gallery: ['/assets/mte/1787374867_6311.jpeg', '/assets/mte/1786814082_6950.webp'],
+    image: '/assets/images/pelling.jpg',
+    gallery: ['/assets/images/pelling.jpg', '/assets/images/sikkim.jpg'],
     overview:
       'Comprehensive East, North & West Sikkim circuit featuring Gangtok, Tsomgo Lake, Lachung’s Yumthang Valley of Flowers, Ravangla, and Pelling.',
     highlights: [
@@ -1221,8 +1221,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 25,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787374620_1089.jpeg',
-    gallery: ['/assets/mte/1787374620_1089.jpeg', '/assets/mte/1787721658_6328.webp'],
+    image: '/assets/images/sikkim.jpg',
+    gallery: ['/assets/images/sikkim.jpg', '/assets/images/sikkim.jpg'],
     overview:
       '25% OFF Best-Seller! A 3 Nights / 4 Days Gangtok and East Sikkim escape featuring Tsomgo Lake, Baba Mandir, and the historic Nathula Pass.',
     highlights: [
@@ -1281,8 +1281,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 21,
     featured: true,
     bestSeller: false,
-    image: '/assets/mte/1787374334_7163.webp',
-    gallery: ['/assets/mte/1787374334_7163.webp'],
+    image: '/assets/images/gangtok_ropeway.jpg',
+    gallery: ['/assets/images/gangtok_ropeway.jpg'],
     overview:
       'Quick 2 Nights / 3 Days weekend Himalayan retreat to Gangtok and Tsomgo Lake with private transfers and curated stays.',
     highlights: [
@@ -1334,8 +1334,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 20,
     featured: true,
     bestSeller: true,
-    image: '/assets/mte/1787761011_8386.jpg',
-    gallery: ['/assets/mte/1787761011_8386.jpg', '/assets/mte/1786814050_7010.webp'],
+    image: '/assets/images/pelling.jpg',
+    gallery: ['/assets/images/pelling.jpg', '/assets/images/pelling.jpg'],
     overview:
       'The Golden Triangle of the Eastern Himalayas: 2 Nights Gangtok, 1 Night Pelling, and 2 Nights Darjeeling in a single panoramic journey.',
     highlights: [
@@ -1408,8 +1408,8 @@ export const TOUR_PACKAGES: TourPackage[] = [
     discountPercent: 18,
     featured: false,
     bestSeller: true,
-    image: '/assets/mte/1787373804_4045.webp',
-    gallery: ['/assets/mte/1787373804_4045.webp', '/assets/mte/1787721518_8653.webp'],
+    image: '/assets/images/darjeeling.jpg',
+    gallery: ['/assets/images/darjeeling.jpg', '/assets/images/darjeeling.jpg'],
     overview:
       'Begin in the colonial tea hills of Darjeeling, ascend to Pelling’s Kanchenjunga viewpoints, and conclude in vibrant Gangtok & Tsomgo Lake.',
     highlights: [
@@ -1474,7 +1474,7 @@ export const LUXURY_HOTELS: LuxuryHotel[] = [
     state: 'Sikkim',
     pricePerNight: 4000,
     rating: 4.9,
-    image: '/assets/mte/1787399084_3277.webp',
+    image: '/assets/images/luxury_resort.jpg',
     features: ['Panoramic Mountain Backdrops', 'Pure-Vegetarian Fine Dining', 'Quiet Chongeytar Setting', 'Luxury Suites & Spa'],
     description:
       'Situated in the peaceful Chongeytar area slightly away from the noisy city centre, offering panoramic Himalayan views, spotless cleanliness, and upscale dining.'
@@ -1487,7 +1487,7 @@ export const LUXURY_HOTELS: LuxuryHotel[] = [
     state: 'Sikkim',
     pricePerNight: 3000,
     rating: 4.8,
-    image: '/assets/mte/1787398066_1623.webp',
+    image: '/assets/images/luxury_resort.jpg',
     features: ['South Sikkim Valley Views', 'Bespoke Wood Interiors', 'Proximity to Char Dham & Ravangla', '24x7 Room Concierge'],
     description:
       'Contemporary mountain suites in Namchi designed for peaceful spiritual and leisure retreats across South Sikkim.'
@@ -1500,7 +1500,7 @@ export const LUXURY_HOTELS: LuxuryHotel[] = [
     state: 'Sikkim',
     pricePerNight: 3500,
     rating: 4.8,
-    image: '/assets/mte/1787397428_2831.webp',
+    image: '/assets/images/monastery.jpg',
     features: ['Easy Access to MG Marg', 'Warm Sikkimese Hospitality', 'Mountain Balcony Rooms', 'Multi-Cuisine Restaurant'],
     description:
       'Premier hotel branding providing spotless rooms, warm local hospitality, smooth check-in, and convenient access to MG Marg.'
@@ -1513,7 +1513,7 @@ export const LUXURY_HOTELS: LuxuryHotel[] = [
     state: 'West Bengal',
     pricePerNight: 3800,
     rating: 4.9,
-    image: '/assets/mte/1787397093_1906.webp',
+    image: '/assets/images/tea_tasting.jpg',
     features: ['Kanchenjunga View Terraces', 'Colonial Timber Aesthetics', 'Tea Lounge & Bonfire', 'Heated Mountain Rooms'],
     description:
       'An atmospheric Darjeeling sanctuary overlooking misty pine ridges and tea gardens with classic Himalayan warmth.'
@@ -1526,7 +1526,7 @@ export const LUXURY_HOTELS: LuxuryHotel[] = [
     state: 'Sikkim',
     pricePerNight: 4000,
     rating: 4.9,
-    image: '/assets/mte/1787396616_2393.webp',
+    image: '/assets/images/pelling.jpg',
     features: ['Direct Kanchenjunga Frontage', 'Boutique Luxury Interiors', 'Near Pelling Skywalk', 'Organic Sikkim Dining'],
     description:
       'Boutique luxury retreat in Upper Pelling crafted for unobstructed sunrise views over the Kanchenjunga massif.'
@@ -1539,7 +1539,7 @@ export const LUXURY_HOTELS: LuxuryHotel[] = [
     state: 'Sikkim',
     pricePerNight: 4000,
     rating: 4.9,
-    image: '/assets/mte/1786375866_4577.webp',
+    image: '/assets/images/luxury_resort.jpg',
     features: ['Rejuvenating Wellness Spa', 'Cultural Architecture', 'Private Valley Decks', 'Executive Banquet & Lounge'],
     description:
       'Flagship luxury resort in Gangtok blending traditional Himalayan architectural motifs with contemporary resort wellness.'
@@ -1558,7 +1558,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 9000,
     hourlyRate: 0,
-    image: '/assets/mte/1789202791_3825.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['4x4 Mountain Drive', 'Premium Sound System', '360 Camera & Leather Cabin']
   },
   {
@@ -1572,7 +1572,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 6000,
     hourlyRate: 0,
-    image: '/assets/mte/1789200480_9333.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Captain Leather Seats', 'GPS Navigation', 'Smooth Hill Suspension']
   },
   {
@@ -1586,7 +1586,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 7000,
     hourlyRate: 500,
-    image: '/assets/mte/1789202141_1990.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Spacious 12-Seat Cabin', '10-Bag Expedition Capacity', 'Air-Conditioned Comfort']
   },
   {
@@ -1600,7 +1600,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 10000,
     hourlyRate: 0,
-    image: '/assets/mte/1789209378_4868.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Flexible Pushback Seats', 'Monocoque Hill Body', '12-Bag Group Capacity']
   },
   {
@@ -1614,7 +1614,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 5500,
     hourlyRate: 0,
-    image: '/assets/mte/1789208719_2456.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['AC 7-Seater MPV', 'Bluetooth Connectivity', 'Hill Assist Control']
   },
   {
@@ -1628,7 +1628,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 5000,
     hourlyRate: 0,
-    image: '/assets/mte/1789202508_1055.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Leather Seats', 'GPS Navigation', 'Trusted Sikkim-Darjeeling Cruiser']
   },
   {
@@ -1642,7 +1642,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 5000,
     hourlyRate: 0,
-    image: '/assets/mte/1789208395_8405.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['High Ground Clearance', 'Expedition Roof Carrier', 'North Sikkim rugged specialist']
   },
   {
@@ -1656,7 +1656,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 4500,
     hourlyRate: 0,
-    image: '/assets/mte/1789208957_7467.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Panoramic Sunroof', 'Bose Sound System', 'Wireless Charging']
   },
   {
@@ -1670,7 +1670,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 4500,
     hourlyRate: 0,
-    image: '/assets/mte/1789201555_1683.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['6-Bag Luggage Space', 'AC Cabin', 'High-Torque Hill Engine']
   },
   {
@@ -1684,7 +1684,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 4500,
     hourlyRate: 0,
-    image: '/assets/mte/1789209195_7441.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Tall-Boy Spacious Cabin', 'Agile Hill Town Navigation', '3-Bag Capacity']
   },
   {
@@ -1698,7 +1698,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: true,
     baseFare: 4000,
     hourlyRate: 0,
-    image: '/assets/mte/1789200576_9908.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['Compact Couples Transfer', 'AC & Bluetooth', 'Bagdogra-Darjeeling Direct']
   },
   {
@@ -1712,7 +1712,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: false,
     baseFare: 1200,
     hourlyRate: 0,
-    image: '/assets/mte/1789210870_4607.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['349cc J-Series Engine', 'Dual-Channel ABS', 'Classic Himalayan Touring']
   },
   {
@@ -1726,7 +1726,7 @@ export const TAXI_FLEET: TaxiCab[] = [
     ac: false,
     baseFare: 1000,
     hourlyRate: 0,
-    image: '/assets/mte/1786371555_5681.webp',
+    image: '/assets/images/suv_fleet.jpg',
     features: ['125cc Hybrid Assist', 'Agile Local Exploration', 'Instant Self-Ride Booking']
   }
 ];
@@ -1743,8 +1743,8 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
       'Guided walks and tastings across emerald slopes of Happy Valley, Makaibari & Gopaldhara estates.',
       'Peace Pagoda, Batasia Loop, Ghoom Monastery, and leisurely evenings at Chowrasta Mall.'
     ],
-    image: '/assets/mte/1787721518_8653.webp',
-    secondaryImage: '/assets/mte/1787375054_9850.webp',
+    image: '/assets/images/darjeeling.jpg',
+    secondaryImage: '/assets/images/darjeeling.jpg',
     layoutVariant: 'right-wide'
   },
   {
@@ -1758,8 +1758,8 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
       'Lachung riverside stays opening into Yumthang Valley of Flowers and snow-clad Zero Point.',
       'West Sikkim’s Pelling Glass Skywalk, Pemayangtse Monastery, and Ravangla’s 130-ft Buddha Park.'
     ],
-    image: '/assets/mte/1787392935_8147.jpg',
-    secondaryImage: '/assets/mte/1787721658_6328.webp',
+    image: '/assets/images/sikkim.jpg',
+    secondaryImage: '/assets/images/sikkim.jpg',
     layoutVariant: 'left-wide'
   },
   {
@@ -1772,8 +1772,8 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
       'Guided trek through misty pine forests to the cliffside Tiger’s Nest Monastery (Paro Taktsang).',
       'Architectural immersion at Tashichho Dzong, Paro Rinpung Dzong, and the towering Buddha Dordenma.'
     ],
-    image: '/assets/mte/1787377115_1558.jpg',
-    secondaryImage: '/assets/mte/1788415057_8146.jpg',
+    image: '/assets/images/bhutan.jpg',
+    secondaryImage: '/assets/images/bhutan.jpg',
     layoutVariant: 'right-tall'
   },
   {
@@ -1786,8 +1786,8 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
       'Panoramic mountain backdrops, quiet settings away from urban noise, and rejuvenating spas.',
       'Spotless rooms, pure-vegetarian and local Himalayan fine dining, and warm regional hospitality.'
     ],
-    image: '/assets/mte/1787399084_3277.webp',
-    secondaryImage: '/assets/mte/1786375866_4577.webp',
+    image: '/assets/images/luxury_resort.jpg',
+    secondaryImage: '/assets/images/luxury_resort.jpg',
     layoutVariant: 'left-tall'
   },
   {
@@ -1800,8 +1800,8 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
       'Direct pickups and drops at Bagdogra Airport (IXB), NJP Railway Station, Siliguri, and Thimphu.',
       'Royal Enfield Hunter 350 touring motorcycles and scooties for independent mountain riders.'
     ],
-    image: '/assets/mte/1789202791_3825.jpeg',
-    secondaryImage: '/assets/mte/1789200480_9333.jpeg',
+    image: '/assets/images/suv_fleet.jpg',
+    secondaryImage: '/assets/images/suv_fleet.jpg',
     layoutVariant: 'right-wide'
   },
   {
@@ -1814,8 +1814,8 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
       'Gorumara and Jaldapara wildlife safaris in the lush green foothills of Dooars.',
       'Kalimpong’s Deolo Hill, Kurseong’s white orchid slopes, and Mirik’s Sumendu Lake.'
     ],
-    image: '/assets/mte/1787722180_8926.webp',
-    secondaryImage: '/assets/mte/1787722202_7719.webp',
+    image: '/assets/images/silkroute.jpg',
+    secondaryImage: '/assets/images/dooars.jpg',
     layoutVariant: 'left-wide'
   }
 ];
@@ -1832,7 +1832,7 @@ export const BLOG_STORIES: BlogStory[] = [
     reads: 342,
     excerpt:
       'Discover Sikkim, the Land of the Gods. Explore Gangtok, Pelling, Lachung, Tsomgo Lake, and ancient monasteries with complete inner-line permit guidance.',
-    image: '/assets/mte/1787721658_6328.webp',
+    image: '/assets/images/sikkim.jpg',
     content: [
       'Nestled between Nepal, Bhutan, and Tibet, Sikkim is an alpine sanctuary where prayer flags flutter against 8,000-meter Himalayan giants. In 2026, improved mountain highways and curated boutique stays make exploring East, North, and West Sikkim more rewarding than ever.',
       'In East Sikkim, begin at Gangtok’s pedestrian-only MG Marg before ascending the historic Silk Route to glacial Tsomgo Lake (12,400 ft), Baba Mandir, and Nathula Pass. Our team arranges all Protected Area Permits (PAP) 24 hours in advance.',
@@ -1850,7 +1850,7 @@ export const BLOG_STORIES: BlogStory[] = [
     reads: 518,
     excerpt:
       'Discover the timeless charm of Darjeeling, the Queen of the Himalayas. Explore Tiger Hill, ride the UNESCO Toy Train, and walk through emerald tea gardens.',
-    image: '/assets/mte/1787721518_8653.webp',
+    image: '/assets/images/darjeeling.jpg',
     content: [
       'Darjeeling remains the crown jewel of the Eastern Himalayas—a ridge-top sanctuary of colonial heritage, aromatic First Flush tea estates, and sweeping panoramas of the Kanchenjunga massif.',
       'Every classic MyTravelExpert Darjeeling itinerary begins before dawn at Tiger Hill (2,590m), where the first amber rays of sunlight ignite the snow peaks of Kanchenjunga, Kabru, and Jannu.',
@@ -1868,7 +1868,7 @@ export const BLOG_STORIES: BlogStory[] = [
     reads: 289,
     excerpt:
       'How to plan a seamless overland expedition from Bagdogra (IXB) through Phuentsholing, Thimphu, and Paro Tiger’s Nest alongside East Sikkim’s 32 hairpin bends.',
-    image: '/assets/mte/1787721816_7818.webp',
+    image: '/assets/images/bhutan.jpg',
     content: [
       'Starting from our corporate hub in Bagdogra (IXB), travelers are uniquely positioned at the crossroads of Darjeeling, Sikkim, Dooars, and the Kingdom of Bhutan.',
       'Within a 4-hour drive through the lush tea corridors of the Dooars lies Phuentsholing—the overland gateway to Bhutan. With MyTravelExpert handling your immigration permits, vehicle clearances, and licensed Bhutanese guides, ascending to Thimphu and trekking to Tiger’s Nest in Paro becomes effortless.',

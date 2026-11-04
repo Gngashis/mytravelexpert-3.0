@@ -526,7 +526,7 @@ export const ShowcaseSelector: React.FC<ShowcaseSelectorProps> = ({
                   selectedPackage?.image ||
                   selectedHotel?.image ||
                   selectedCab?.image ||
-                  '/assets/mte/1787721518_8653.webp'
+                  '/assets/images/darjeeling.jpg'
                 }
                 alt={
                   selectedPackage?.title ||

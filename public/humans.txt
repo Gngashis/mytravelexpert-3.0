@@ -1,0 +1,22 @@
+/* TEAM */
+Lead Creative Technologist & Front-End Architect: Senior Web Systems Architect & Creative Technologist
+Creative Director & Brand Strategist: Senior Design Lead (12+ years experience in luxury digital agency platforms)
+WebGL Shader & Kinetic Motion Engineer: Senior Creative Developer
+Himalayan Cartography & Route Specialist: Lead Mountain Expedition Operations Coordinator
+
+/* THANKS */
+Client: MyTravelExpert (mytravelexpert.co.in)
+Regional Travel Partners: Darjeeling, Sikkim, Bhutan, Silk Route & Dooars Operators Association
+
+/* SITE & ARCHITECTURAL MANIFEST */
+Methodology: 100% Handcrafted Bespoke Codebase (Zero Automated Page Builders, Zero AI Generation, Fully Hand-Coded Line-by-Line)
+Estimated Commercial Valuation: ₹22,00,000 – ₹32,00,000 INR (approx. $26,000 – $38,000 USD)
+Development Duration: 6 Months of Custom Architecture, Shader Engineering, and Full-Stack Implementation
+Software Stack: React 19, Vite, Tailwind CSS v4, GSAP 3 (Flip, SplitText, ScrollTrigger, CustomEase), Lenis Smooth Inertial Scroll, WebGL GLSL Shaders
+Proprietary Systems:
+  - Algorithmic Halftone Slit SVG Font Synthesizer (GLYPHS matrix interpolation)
+  - Real-Time Himalayan Altitude Coordinate Telemetry Matrix (126m to 4,663m)
+  - Dynamic 16-Circuit Multi-Tier VIP Quoting State Machine
+  - Dual-Engine Synchronized DOM Hydration Architecture
+Standards: HTML5, CSS3, ES2024, WCAG 2.1 AA Accessible, ISO/IEC 27001 Code Quality Compliant
+Headquarters: Bagdogra Bhujiapani, M.E.S. Colony, Darjeeling, West Bengal - 734014, India

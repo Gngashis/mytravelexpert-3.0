@@ -1,243 +1,165 @@
-@import "tailwindcss";
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities) source(none);
+@source "./App.tsx";
 
-@font-face {
-  font-family: "KTF Metro Roman";
-  src: url("/assets/fonts/KTFMetro-Roman.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+#sondaven-stage .container {
+  max-width: none !important;
 }
 
-@font-face {
-  font-family: "KTF Metro Blueline";
-  src: url("/assets/fonts/KTFMetro-Blueline.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+.mte-portal {
+  font-family: 'KTFMetro-Roman', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
 }
 
-:root {
-  --sd-dark: #2c2824;
-  --sd-light: #a89474;
-  --sd-white: #ffffff;
-  --dur-s: 0.4s;
-  --dur-m: 0.6s;
-  --dur-l: 1.2s;
-  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
-  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
-  --font-display: "KTF Metro Roman", "Cormorant Garamond", Georgia, serif;
-  --font-body: "KTF Metro Blueline", "Space Mono", monospace;
+.mte-portal * {
+  box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-  background-color: #2c2824;
-  color: #a89474;
-  font-family: var(--font-body);
+.mte-display-font {
+  font-family: 'KTFMetro-Blueline', 'KTFMetro-Roman', serif;
 }
 
-body {
-  background-color: #2c2824;
-  color: #a89474;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
+@keyframes mteSlideCycle1 {
+  0%, 22% { opacity: 1; transform: scale(1.02); }
+  25%, 97% { opacity: 0; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1.02); }
+}
+@keyframes mteSlideCycle2 {
+  0%, 22% { opacity: 0; transform: scale(1.08); }
+  25%, 47% { opacity: 1; transform: scale(1.02); }
+  50%, 100% { opacity: 0; transform: scale(1.1); }
+}
+@keyframes mteSlideCycle3 {
+  0%, 47% { opacity: 0; transform: scale(1.08); }
+  50%, 72% { opacity: 1; transform: scale(1.02); }
+  75%, 100% { opacity: 0; transform: scale(1.1); }
+}
+@keyframes mteSlideCycle4 {
+  0%, 72% { opacity: 0; transform: scale(1.08); }
+  75%, 97% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+@keyframes mtePulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.45; }
+}
+@keyframes mteRouteDash {
+  0% { stroke-dashoffset: 320; }
+  50% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -320; }
 }
 
-::selection {
-  color: #2c2824;
-  background: #a89474;
-}
-
-/* Son Daven Theme System */
-.theme_on-dark {
-  --theme-bg: #2c2824;
-  --theme-fg: #a89474;
-  --theme-fg-muted: rgba(168, 148, 116, 0.55);
-  --theme-border: rgba(168, 148, 116, 0.16);
-  --theme-btn-bg: #a89474;
-  --theme-btn-fg: #2c2824;
-  background-color: var(--theme-bg);
-  color: var(--theme-fg);
-}
-
-.theme_on-light {
-  --theme-bg: #a89474;
-  --theme-fg: #2c2824;
-  --theme-fg-muted: rgba(44, 40, 36, 0.6);
-  --theme-border: rgba(44, 40, 36, 0.16);
-  --theme-btn-bg: #2c2824;
-  --theme-btn-fg: #a89474;
-  background-color: var(--theme-bg);
-  color: var(--theme-fg);
-}
-
-.theme_on-color {
-  --theme-bg: #2c2824;
-  --theme-fg: #ffffff;
-  --theme-fg-muted: rgba(255, 255, 255, 0.68);
-  --theme-border: rgba(255, 255, 255, 0.22);
-  --theme-btn-bg: #2c2824;
-  --theme-btn-fg: #a89474;
-  color: var(--theme-fg);
-}
-
-/* Typography Classes matching sondaven.com/en */
-.font-sd-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.04em;
-  line-height: 0.92;
-  font-weight: 400;
-}
-
-.font-sd-body {
-  font-family: var(--font-body);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* Son Daven Morphing Capsule-to-Rectangle Button */
-.sd-btn {
+.mte-compass-card {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.65rem;
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  cursor: pointer;
-  isolation: isolate;
-  transition: transform 0.45s var(--ease-out);
-  white-space: nowrap;
-}
-
-.sd-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: var(--theme-btn-bg, #2c2824);
-  border-radius: 9999px;
-  z-index: -2;
-  transition: inset 0.45s var(--ease-out), border-radius 0.45s var(--ease-out);
-}
-
-.sd-btn::after {
-  content: "";
-  position: absolute;
-  inset: -3px;
-  background-color: var(--theme-btn-bg, #2c2824);
-  border-radius: 9999px;
-  opacity: 0;
-  z-index: -1;
-  transition: inset 0.45s var(--ease-out), border-radius 0.45s var(--ease-out), opacity 0.45s var(--ease-out);
-}
-
-.sd-btn:hover::before {
-  inset: -3px;
-  border-radius: 0px;
-}
-
-.sd-btn:hover::after {
-  inset: 0;
-  border-radius: 0px;
-  opacity: 1;
-}
-
-/* Son Daven Double-Line Vertical Text Slide Hover */
-.sd-slide-label {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  line-height: 1.2;
-}
-
-.sd-slide-label > span {
-  display: block;
-  transition: transform 0.45s var(--ease-out);
-}
-
-.sd-slide-label > span:nth-child(2) {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-}
-
-.group:hover .sd-slide-label > span:nth-child(1),
-.sd-btn:hover .sd-slide-label > span:nth-child(1) {
-  transform: translateY(-100%);
-}
-
-.group:hover .sd-slide-label > span:nth-child(2),
-.sd-btn:hover .sd-slide-label > span:nth-child(2) {
-  transform: translateY(-100%);
-}
-
-/* Son Daven Circular Magnetic Button */
-.sd-circle-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid currentColor;
-  transition: transform 0.5s var(--ease-out), background-color 0.5s var(--ease-out), color 0.5s var(--ease-out);
-}
-
-.sd-circle-btn:hover {
-  transform: scale(1.05);
-}
-
-/* Marquee animation for Financial / Value Indicators */
-@keyframes sd-marquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-sd-marquee {
-  display: flex;
-  width: max-content;
-  animation: sd-marquee 26s linear infinite;
-}
-
-/* Animated Hairline Divider */
-.sd-hairline {
-  position: relative;
-  height: 1px;
-  width: 100%;
-  background-color: var(--theme-border);
-  overflow: hidden;
-}
-
-.sd-hairline::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--theme-fg);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.6s var(--ease-out);
+  overflow: hidden;
+  background: #1f1c18;
+  color: #ebe7e0;
+  font-family: 'KTFMetro-Roman', sans-serif;
 }
 
-.group:hover .sd-hairline::after {
-  transform: scaleX(1);
+.mte-compass-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.68) contrast(1.06);
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Hide scrollbars on horizontal galleries */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.mte-compass-slide.s1 { animation: mteSlideCycle1 16s infinite ease-in-out; }
+.mte-compass-slide.s2 { animation: mteSlideCycle2 16s infinite ease-in-out; }
+.mte-compass-slide.s3 { animation: mteSlideCycle3 16s infinite ease-in-out; }
+.mte-compass-slide.s4 { animation: mteSlideCycle4 16s infinite ease-in-out; }
+
+.video-card:hover .mte-compass-slide {
+  filter: brightness(0.78) contrast(1.1);
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.mte-compass-hud {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(25,22,18,0.68) 0%, rgba(25,22,18,0.18) 45%, rgba(25,22,18,0.85) 100%);
+  pointer-events: none;
+}
+
+.mte-compass-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ebe7e0;
+}
+
+.mte-compass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: rgba(223, 63, 20, 0.9);
+  color: #ebe7e0;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.mte-compass-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ebe7e0;
+  animation: mtePulseDot 2s infinite ease-in-out;
+}
+
+.mte-compass-route-svg {
+  width: 100%;
+  height: 46px;
+  overflow: visible;
+}
+
+.mte-compass-route-line {
+  stroke-dasharray: 320;
+  animation: mteRouteDash 8s infinite linear;
+}
+
+.mte-compass-bot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+  border-top: 1px solid rgba(235, 231, 224, 0.22);
+  padding-top: 8px;
+}
+
+.mte-compass-title {
+  font-family: 'KTFMetro-Blueline', serif;
+  font-size: 15px;
+  line-height: 1.15;
+  color: #ebe7e0;
+  text-transform: uppercase;
+}
+
+.mte-compass-sub {
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d0c4b0;
+  margin-top: 2px;
+}
+
+.mte-compass-elev {
+  font-family: 'KTFMetro-Blueline', serif;
+  font-size: 14px;
+  color: #df3f14;
+  text-align: right;
+  white-space: nowrap;
 }
