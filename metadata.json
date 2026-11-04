@@ -1,0 +1,6 @@
+{
+  "name": "MyTravelExpert — Himalayan Bespoke Expeditions",
+  "description": "Curated luxury journeys, tour packages, premier mountain stays, and bespoke Himalayan expeditions across Darjeeling, Sikkim, Bhutan, Dooars, Kalimpong, and the Silk Route.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
