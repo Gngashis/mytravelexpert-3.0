@@ -80,4 +80,15 @@ test('validateInquiryForm rejects invalid inputs and accepts valid details', () 
     message: 'Looking for a customized 6N/7D Gangtok Lachung Lachen tour with Innova Crysta.'
   });
   assert.equal(valid.valid, true);
+
+  const validBlankEmail = validateInquiryForm({
+    fullName: 'Aarav Sharma',
+    email: '',
+    phone: '+91 9876543210',
+    subject: 'Sikkim 6N/7D Expedition',
+    travelMonth: 'December 2026',
+    guests: 4,
+    message: 'Looking for a customized 6N/7D Gangtok Lachung Lachen tour with Innova Crysta.'
+  });
+  assert.equal(validBlankEmail.valid, true);
 });

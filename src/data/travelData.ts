@@ -129,7 +129,7 @@ export const COMPANY_INFO = {
   stats: [
     { value: '12+', label: 'Curated Himalayan Destinations across India & Bhutan' },
     { value: '16+', label: 'Handpicked Tour Packages with Verified Local Guides' },
-    { value: '17+', label: 'Mountain Cabs, Luxury 4x4 SUVs & Touring Bikes Ready' },
+    { value: '13+', label: 'Mountain Cabs, Luxury 4x4 SUVs & Touring Bikes Ready' },
     { value: '6+', label: 'Premier Himalayan Resorts & Boutique Viewpoint Stays' }
   ]
 };
@@ -1793,7 +1793,7 @@ export const UNIQUENESS_ITEMS: UniquenessItem[] = [
   {
     id: 'uniq-5',
     number: '05',
-    title: '17+ Verified Mountain Cabs & 4x4 Fleet',
+    title: '13+ Verified Mountain Cabs & 4x4 Fleet',
     subtitle: 'Every mountain curve navigated with seasoned local hill drivers and dedicated vehicles:',
     points: [
       'From luxury Toyota Fortuner 4x4s and Innova Crystas to 12-seater Toyota Hiace coasters.',
@@ -1918,7 +1918,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     index: '06',
     question: 'Can I book only a luxury mountain hotel or a private taxi/cab without a full tour package?',
     answer:
-      'Yes. We offer standalone bookings across our 6 curated mountain hotels (starting from ₹3,000/night) and our 17+ strong fleet of SUVs, Tempo Travellers, Toyota Hiace coasters, and Royal Enfield motorcycles.'
+      'Yes. We offer standalone bookings across our 6 curated mountain hotels (starting from ₹3,000/night) and our 13+ strong fleet of SUVs, Tempo Travellers, Toyota Hiace coasters, and Royal Enfield motorcycles.'
   },
   {
     id: 'faq-7',
