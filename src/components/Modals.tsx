@@ -171,6 +171,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   );
   const [errors, setErrors] = useState<Partial<Record<keyof InquiryFormInput, string>>>({});
   const [submittedRecord, setSubmittedRecord] = useState<SavedInquiryRecord | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     if (initialSubject) setSubject(initialSubject);
@@ -195,9 +197,6 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       setBasePrice(foundPkg.price);
     }
   };
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
