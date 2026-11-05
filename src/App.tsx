@@ -19,6 +19,7 @@ import {
   filterAndSortPackages,
   validateInquiryForm,
 } from './utils/bookingLogic';
+import { ConsultationModal } from './components/Modals';
 
 type DrawerTab = 'packages' | 'hotels' | 'cabs' | 'calculator';
 export type LegalDocType = 'privacy' | 'terms' | 'booking' | 'cancellation' | null;
@@ -36,6 +37,9 @@ export default function App() {
 
   // Legal Policy Viewer Modal State
   const [legalModalDoc, setLegalModalDoc] = useState<LegalDocType>(null);
+
+  // Consultation Modal State
+  const [isConsultationOpen, setIsConsultationOpen] = useState<boolean>(false);
 
   // Live VIP Quote Calculator & Booking State
   const [selectedPkgId, setSelectedPkgId] = useState<string>(TOUR_PACKAGES[0]?.id || '');
@@ -71,6 +75,16 @@ export default function App() {
         return;
       }
 
+      const consultTrigger = target.closest(
+        '[data-mte-consultation], [data-mte-open="consultation"], a[aria-label="Consultation"]'
+      );
+      if (consultTrigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsConsultationOpen(true);
+        return;
+      }
+
       const openTrigger = target.closest('[data-mte-open]');
       if (openTrigger) {
         e.preventDefault();
@@ -95,6 +109,8 @@ export default function App() {
       if (e.key === 'Escape') {
         if (legalModalDoc) {
           setLegalModalDoc(null);
+        } else if (isConsultationOpen) {
+          setIsConsultationOpen(false);
         } else if (drawerOpen) {
           setDrawerOpen(false);
         }
@@ -102,7 +118,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [drawerOpen, legalModalDoc]);
+  }, [drawerOpen, legalModalDoc, isConsultationOpen]);
 
   // Webflow CTA Modal (#phone-form) submission bridge to /api/enquiry
   useEffect(() => {
@@ -472,6 +488,24 @@ export default function App() {
         >
           10% VIP Quote &amp; Book
         </button>
+        <button
+          type="button"
+          onClick={() => setIsConsultationOpen(true)}
+          style={{
+            backgroundColor: '#2c2824',
+            color: '#a89474',
+            border: '1px solid rgba(168, 148, 116, 0.45)',
+            padding: '10px 16px',
+            fontSize: '12px',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.28)',
+          }}
+        >
+          Free Consultation
+        </button>
       </div>
 
       {/* IN-APP LEGAL POLICY & TRUST MODAL DIALOG */}
@@ -706,6 +740,24 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* 24x7 HIMALAYAN EXPEDITION CONSULTATION MODAL */}
+      <ConsultationModal
+        isOpen={isConsultationOpen}
+        onClose={() => setIsConsultationOpen(false)}
+        initialSubject={selectedPackage.title}
+        initialBasePrice={selectedPackage.price}
+        savedInquiries={[]}
+        onSaveInquiry={(record) => {
+          saveInquiryToLocalBackup(record.referenceCode, {
+            fullName: record.fullName,
+            pkg: record.subject,
+            travelDate: record.travelMonth,
+            guests: record.guests,
+            total: record.finalTotal,
+          });
+        }}
+      />
 
       {/* Full Interactive Catalogue & Live 10% VIP Quote Drawer */}
       {drawerOpen && (

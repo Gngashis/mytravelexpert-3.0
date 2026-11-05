@@ -22,6 +22,8 @@ export interface SavedInquiryRecord {
   travelMonth: string;
   finalTotal: number;
   createdAt: string;
+  serverPersisted?: boolean;
+  emailSent?: boolean;
 }
 
 interface MenuModalProps {
@@ -219,6 +221,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
     setIsSubmitting(true);
     let refCode = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
+    let serverPersisted = false;
+    let emailSent = false;
 
     try {
       const response = await fetch('/api/enquiry', {
@@ -231,20 +235,39 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
           subject,
           travelMonth,
           guests,
-          cabUpgrade: selectedCabFare > 0 ? `Mountain Vehicle Upgrade (₹${selectedCabFare})` : 'Standard Package Transfer Included',
+          cabUpgrade:
+            selectedCabFare > 0
+              ? `Mountain Vehicle Upgrade (₹${selectedCabFare})`
+              : 'Standard Package Transfer Included',
           vipDiscount: applyVipDiscount,
           finalTotal: quote.finalTotal,
           message: message.trim(),
-          source: 'consultation_modal'
-        })
+          source: 'consultation_modal',
+        }),
       });
 
       const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.ok) {
+        if (data?.errors && typeof data.errors === 'object') {
+          setErrors(data.errors);
+        }
+        setSubmitError(
+          data?.error ||
+            'Unable to process your consultation request. Please check your details or contact us directly on WhatsApp (+91 8001247778).'
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
       if (data && data.referenceCode) {
         refCode = data.referenceCode;
       }
+      serverPersisted = Boolean(data?.storage?.permanent);
+      emailSent = Boolean(data?.notification?.emailSent);
     } catch {
-      // Local fallback
+      // Offline fallback: store locally
+      serverPersisted = false;
     } finally {
       setIsSubmitting(false);
     }
@@ -257,7 +280,9 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       guests,
       travelMonth,
       finalTotal: quote.finalTotal,
-      createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      serverPersisted,
+      emailSent,
     };
 
     onSaveInquiry(record);
@@ -303,6 +328,17 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               <h3 className="font-sd-display text-4xl mt-4">
                 Thank you, {submittedRecord.fullName}. See you in the Himalayas.
               </h3>
+              <div className="mt-3 text-xs">
+                {submittedRecord.serverPersisted ? (
+                  <span className="inline-flex items-center gap-1.5 text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded">
+                    ✓ Permanently recorded in our cloud booking database (Vercel Blob)
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 text-amber-300 bg-amber-950/40 border border-amber-500/30 px-3 py-1 rounded">
+                    ⚡ Saved in local browser cache (offline mode). Please share your reference via WhatsApp below.
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-[#a89474]/85 mt-3 leading-relaxed">
                 Our Bagdogra / Darjeeling travel concierge team has logged your request for{' '}
                 <strong>{submittedRecord.subject}</strong> ({submittedRecord.guests} Travelers ·{' '}
@@ -313,7 +349,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               <div className="mt-6 pt-6 border-t border-[#a89474]/20 flex flex-wrap items-center gap-4">
                 <a
                   href={`https://wa.me/918001247778?text=${encodeURIComponent(
-                    `Hello MyTravelExpert! My Ref is ${submittedRecord.referenceCode} for ${submittedRecord.subject} (${submittedRecord.guests} guests, ${submittedRecord.travelMonth}).`
+                    `Hello MyTravelExpert! My Ref is ${submittedRecord.referenceCode} for ${submittedRecord.subject} (${submittedRecord.guests} guests, ${submittedRecord.travelMonth}). Name: ${submittedRecord.fullName}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -543,6 +579,12 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   <p className="text-[#e23d3d] text-xs mt-1">{errors.message}</p>
                 )}
               </div>
+
+              {submitError && (
+                <div className="p-3 bg-red-950/40 border border-red-500/40 text-red-300 text-xs rounded">
+                  {submitError}
+                </div>
+              )}
 
               <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
                 <button
