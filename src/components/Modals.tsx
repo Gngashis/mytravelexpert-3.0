@@ -35,6 +35,15 @@ export const MenuModal: React.FC<MenuModalProps> = ({
   onClose,
   onOpenConsultation
 }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const navItems = [
@@ -137,6 +146,15 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   savedInquiries,
   onSaveInquiry
 }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -554,6 +572,15 @@ export const ItineraryDetailModal: React.FC<ItineraryDetailModalProps> = ({
   onClose,
   onBookPackage
 }) => {
+  useEffect(() => {
+    if (!pkg) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pkg, onClose]);
+
   if (!pkg) return null;
 
   return (
@@ -662,6 +689,15 @@ export const BlogReaderModal: React.FC<BlogReaderModalProps> = ({
   onClose,
   onOpenConsultation
 }) => {
+  useEffect(() => {
+    if (!story) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [story, onClose]);
+
   if (!story) return null;
 
   return (

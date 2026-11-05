@@ -1,11 +1,6 @@
 /**
  * ============================================================================
- * MY TRAVEL EXPERT (MTE) — CLIENT RUNTIME HYDRATION & RUNTIME GLSL BRIDGE
- * ============================================================================
- * Architect: Principal Creative Technologist & Front-End Systems Lead
- * Studio: Apex Interactive Systems
- * Architecture: Handcrafted React 19 Concurrent Hybrid Hydration Pipeline
- * Commercial Valuation: ₹22L – ₹32L INR Custom Tier-1 Production Build
+ * MY TRAVEL EXPERT (MTE) 3.0 — CLIENT RUNTIME HYDRATION & GLSL BRIDGE
  * Copyright (c) 2026 MyTravelExpert. All Rights Reserved.
  * ============================================================================
  */
