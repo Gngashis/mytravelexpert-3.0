@@ -47,9 +47,14 @@ export default function App() {
   const [customerEmail, setCustomerEmail] = useState<string>('');
   const [travelDate, setTravelDate] = useState<string>('2026-11-15');
   const [customNotes, setCustomNotes] = useState<string>(' Bagdogra Airport (IXB) Pickup');
+  const [honeypotWebsite, setHoneypotWebsite] = useState<string>('');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string>('');
   const [bookingConfirmed, setBookingConfirmed] = useState<boolean>(false);
   const [bookingReference, setBookingReference] = useState<string>('');
+  const [serverPersisted, setServerPersisted] = useState<boolean>(false);
+  const [emailNotified, setEmailNotified] = useState<boolean>(false);
 
   // Bridge clicks from the Webflow DOM ([data-mte-open] and [data-mte-policy])
   useEffect(() => {
@@ -135,24 +140,8 @@ export default function App() {
     setDrawerOpen(true);
   };
 
-  const handleConfirmBooking = (e: React.FormEvent) => {
-    e.preventDefault();
-    const validation = validateInquiryForm({
-      fullName: customerName,
-      phone: customerPhone,
-      email: customerEmail,
-      subject: selectedPackage.title,
-      travelMonth: travelDate,
-      guests,
-      message: customNotes || 'Standard itinerary booking request',
-    });
-    if (!validation.valid) {
-      setFormErrors(validation.errors as Record<string, string>);
-      return;
-    }
-    setFormErrors({});
-
-    let refCode = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
+  const saveInquiryToLocalBackup = (refCode: string) => {
+    let resolvedRef = refCode;
     try {
       const existing = JSON.parse(localStorage.getItem('mte_inquiries') || '[]');
       const normalizedPhone = customerPhone.replace(/[\s\-()]/g, '');
@@ -164,10 +153,10 @@ export default function App() {
           item.travelDate === travelDate
       );
       if (duplicate && duplicate.refCode) {
-        refCode = duplicate.refCode;
+        resolvedRef = duplicate.refCode;
       } else {
         existing.push({
-          refCode,
+          refCode: resolvedRef,
           fullName: customerName.trim(),
           phone: customerPhone.trim(),
           email: customerEmail.trim(),
@@ -182,9 +171,88 @@ export default function App() {
     } catch {
       // Storage unavailable fallback
     }
+    return resolvedRef;
+  };
 
-    setBookingReference(refCode);
-    setBookingConfirmed(true);
+  const handleConfirmBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    setSubmitError('');
+    const validation = validateInquiryForm({
+      fullName: customerName,
+      phone: customerPhone,
+      email: customerEmail,
+      subject: selectedPackage.title,
+      travelMonth: travelDate,
+      guests,
+      message: customNotes || 'Standard itinerary booking request',
+    });
+    if (!validation.valid) {
+      setFormErrors(validation.errors as Record<string, string>);
+      setBookingConfirmed(false);
+      return;
+    }
+    setFormErrors({});
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: customerName.trim(),
+          phone: customerPhone.trim(),
+          email: customerEmail.trim(),
+          subject: selectedPackage.title,
+          travelMonth: travelDate,
+          guests,
+          cabUpgrade: selectedCab ? selectedCab.name : 'Standard Package SUV/Sedan Included',
+          vipDiscount,
+          finalTotal: quote.finalTotal,
+          message: customNotes || 'Standard itinerary booking request',
+          source: 'booking_modal',
+          website: honeypotWebsite,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.ok) {
+        if (data?.errors && typeof data.errors === 'object') {
+          setFormErrors(data.errors as Record<string, string>);
+        }
+        setSubmitError(
+          data?.error ||
+            'Unable to process your enquiry at this moment. Please check your details or message us on WhatsApp (+91 8001247778).'
+        );
+        setBookingConfirmed(false);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const serverRef = String(
+        data.referenceCode || `MTE-${Math.floor(100000 + Math.random() * 900000)}`
+      );
+      const finalRef = saveInquiryToLocalBackup(serverRef);
+      setServerPersisted(Boolean(data.storage?.persisted));
+      setEmailNotified(Boolean(data.notification?.emailSent));
+      setBookingReference(finalRef);
+      setBookingConfirmed(true);
+    } catch {
+      const fallbackRef = saveInquiryToLocalBackup(
+        `MTE-${Math.floor(100000 + Math.random() * 900000)}`
+      );
+      setBookingReference(fallbackRef);
+      setServerPersisted(false);
+      setEmailNotified(false);
+      setSubmitError(
+        `Network error reaching the booking server. Your quote (#${fallbackRef}) has been preserved in your browser—please retry or send it directly via WhatsApp (+91 8001247778).`
+      );
+      setBookingConfirmed(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -1344,6 +1412,65 @@ export default function App() {
                       />
                     </div>
 
+                    {/* Honeypot field for automated bot spam protection */}
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        position: 'absolute',
+                        left: '-9999px',
+                        width: '1px',
+                        height: '1px',
+                        overflow: 'hidden',
+                        opacity: 0,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <label htmlFor="mte-hp-website">Website</label>
+                      <input
+                        id="mte-hp-website"
+                        type="text"
+                        name="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={honeypotWebsite}
+                        onChange={(e) => setHoneypotWebsite(e.target.value)}
+                      />
+                    </div>
+
+                    {submitError && (
+                      <div
+                        role="alert"
+                        style={{
+                          padding: '10px 12px',
+                          backgroundColor: 'rgba(217, 45, 32, 0.1)',
+                          border: '1px solid #D92D20',
+                          color: '#B42318',
+                          fontSize: '12px',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        <div>{submitError}</div>
+                        {bookingReference && (
+                          <div style={{ marginTop: '6px' }}>
+                            <a
+                              href={`https://wa.me/918001247778?text=${encodeURIComponent(
+                                `Hello MyTravelExpert! Reference ${bookingReference} for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Name: ${customerName}, Phone: ${customerPhone}. Estimated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: '#1F261F',
+                                fontWeight: 700,
+                                textDecoration: 'underline',
+                              }}
+                            >
+                              Dispatch Reference #{bookingReference} via WhatsApp (+91 8001247778) →
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div style={{ fontSize: '11px', color: '#666' }}>
                       By confirming, you agree to our{' '}
                       <button
@@ -1382,19 +1509,22 @@ export default function App() {
 
                     <button
                       type="submit"
+                      disabled={isSubmitting}
                       style={{
                         padding: '12px 18px',
-                        backgroundColor: '#FF4929',
+                        backgroundColor: isSubmitting ? '#7A827A' : '#FF4929',
                         color: '#FFFFFF',
                         border: 'none',
                         fontSize: '12px',
                         textTransform: 'uppercase',
                         letterSpacing: '0.08em',
                         fontWeight: 600,
-                        cursor: 'pointer',
+                        cursor: isSubmitting ? 'wait' : 'pointer',
                       }}
                     >
-                      Lock 10% VIP Quote &amp; Request Callback
+                      {isSubmitting
+                        ? 'Recording Enquiry...'
+                        : 'Lock 10% VIP Quote & Request Callback'}
                     </button>
                   </form>
 
@@ -1504,14 +1634,20 @@ export default function App() {
                           }}
                         >
                           <div style={{ fontWeight: 700, color: '#FF4929', marginBottom: '4px' }}>
-                            ✓ Quote Reference #{bookingReference} Prepared — Dispatch to Confirm
+                            ✓ Enquiry Recorded #{bookingReference} —{' '}
+                            {emailNotified
+                              ? 'Bagdogra Desk Notified by Email'
+                              : serverPersisted
+                              ? 'Saved to Server & Ready for Instant Dispatch'
+                              : 'Quote Prepared — Dispatch to Confirm'}
                           </div>
                           <div style={{ marginBottom: '10px' }}>
                             Thank you, <strong>{customerName}</strong>! Your custom VIP quote for{' '}
-                            <strong>{selectedPackage.title}</strong> ({travelDate}) is saved locally.
-                            Please send your quote reference directly to our Bagdogra travel desk (
-                            {COMPANY_INFO.phone}) via WhatsApp or Email below to initiate your
-                            reservation and callback on <strong>{customerPhone}</strong>:
+                            <strong>{selectedPackage.title}</strong> ({travelDate}) has been logged
+                            under reference <strong>{bookingReference}</strong>.{' '}
+                            {emailNotified
+                              ? `An automated notification has been dispatched to our Bagdogra operations desk (${COMPANY_INFO.phone}) for callback on ${customerPhone}. You may also connect immediately via WhatsApp or Email:`
+                              : `For immediate priority confirmation and callback on ${customerPhone}, you can also send your quote reference directly to our Bagdogra travel desk (${COMPANY_INFO.phone}) via WhatsApp or Email below:`}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                             <a

@@ -4,6 +4,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
       "source": "/privacy-policy",
       "destination": "/privacy-policy.html"
     },
@@ -20,7 +24,7 @@
       "destination": "/cancellation-refund-policy.html"
     },
     {
-      "source": "/((?!assets/|.*\\..*).*)",
+      "source": "/((?!api/|assets/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ],

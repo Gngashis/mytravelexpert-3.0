@@ -194,8 +194,14 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setSubmitError('');
     const validation = validateInquiryForm({
       fullName,
       email,
@@ -211,9 +217,41 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       return;
     }
 
+    setIsSubmitting(true);
+    let refCode = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    try {
+      const response = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: fullName.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          subject,
+          travelMonth,
+          guests,
+          cabUpgrade: selectedCabFare > 0 ? `Mountain Vehicle Upgrade (₹${selectedCabFare})` : 'Standard Package Transfer Included',
+          vipDiscount: applyVipDiscount,
+          finalTotal: quote.finalTotal,
+          message: message.trim(),
+          source: 'consultation_modal'
+        })
+      });
+
+      const data = await response.json().catch(() => null);
+      if (data && data.referenceCode) {
+        refCode = data.referenceCode;
+      }
+    } catch {
+      // Local fallback
+    } finally {
+      setIsSubmitting(false);
+    }
+
     const record: SavedInquiryRecord = {
       id: `inq-${Date.now()}`,
-      referenceCode: `MTE-${Math.floor(100000 + Math.random() * 900000)}`,
+      referenceCode: refCode,
       fullName: fullName.trim(),
       subject,
       guests,
@@ -509,12 +547,13 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="sd-btn text-[#2c2824]"
-                  style={{ '--theme-btn-bg': '#a89474' } as React.CSSProperties}
+                  style={{ '--theme-btn-bg': isSubmitting ? '#7a6c55' : '#a89474', cursor: isSubmitting ? 'wait' : 'pointer' } as React.CSSProperties}
                 >
                   <span className="sd-slide-label">
-                    <span>Send Message Now</span>
-                    <span>Send Message Now</span>
+                    <span>{isSubmitting ? 'Recording Enquiry...' : 'Send Message Now'}</span>
+                    <span>{isSubmitting ? 'Recording Enquiry...' : 'Send Message Now'}</span>
                   </span>
                 </button>
                 <span className="font-sd-body text-[10px] tracking-[0.12em] text-[#a89474]/60">
