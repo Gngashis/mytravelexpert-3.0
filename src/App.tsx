@@ -104,6 +104,143 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [drawerOpen, legalModalDoc]);
 
+  // Webflow CTA Modal (#phone-form) submission bridge to /api/enquiry
+  useEffect(() => {
+    let isSubmittingWebflow = false;
+
+    const handleWebflowSubmit = async (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isSubmittingWebflow) return;
+
+      const phoneForm = document.getElementById('phone-form') as HTMLFormElement | null;
+      if (!phoneForm) return;
+
+      const nameInput = document.getElementById('Name') as HTMLInputElement | null;
+      const phoneInput = document.getElementById('Phone') as HTMLInputElement | null;
+      const name = (nameInput?.value || '').trim();
+      const phone = (phoneInput?.value || '').trim();
+
+      // Clear any prior error
+      const existingError = phoneForm.querySelector('.mte-wf-form-error');
+      if (existingError) existingError.remove();
+
+      const showError = (msg: string) => {
+        const errEl = document.createElement('div');
+        errEl.className = 'mte-wf-form-error';
+        errEl.style.cssText = 'color: #ef4444; font-size: 11px; margin-top: 8px; font-weight: 500;';
+        errEl.textContent = msg;
+        const inputList = phoneForm.querySelector('.input-list');
+        if (inputList) inputList.appendChild(errEl);
+      };
+
+      if (!name || name.length < 2) {
+        showError('Please enter your full name (minimum 2 characters).');
+        nameInput?.focus();
+        return;
+      }
+
+      const digits = phone.replace(/[^0-9]/g, '');
+      if (digits.length < 10 || digits.length > 15) {
+        showError('Please enter a valid phone number (10 to 15 digits).');
+        phoneInput?.focus();
+        return;
+      }
+
+      const submitBtn = phoneForm.querySelector('[data-form-btn] a') as HTMLElement | null;
+      const btnText = phoneForm.querySelector('[data-form-btn] [hover="text"]') as HTMLElement | null;
+      const originalText = btnText?.textContent || 'Get Free Custom Quote';
+
+      isSubmittingWebflow = true;
+      if (btnText) btnText.textContent = 'Securing Quote...';
+      if (submitBtn) submitBtn.style.pointerEvents = 'none';
+
+      try {
+        const res = await fetch('/api/enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: name,
+            phone,
+            source: 'webflow_cta_modal',
+            subject: 'Custom Himalayan Tour & 10% VIP Quote',
+            guests: 2,
+            notes: 'Enquiry via Webflow header & hero consultation modal',
+          }),
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok || !data?.ok) {
+          throw new Error(data?.error || 'Unable to submit quote request. Please retry or message WhatsApp.');
+        }
+
+        const serverRef = String(data.referenceCode || `MTE-${Math.floor(100000 + Math.random() * 900000)}`);
+        saveInquiryToLocalBackup(serverRef, {
+          fullName: name,
+          phone,
+          pkg: 'Custom Himalayan Tour & 10% VIP Quote',
+          guests: 2,
+        });
+
+        // Hide form and display rich confirmation state
+        phoneForm.style.display = 'none';
+        const successBlock = document.querySelector('.modal_cta-form_success') as HTMLElement | null;
+        if (successBlock) {
+          successBlock.style.display = 'block';
+          successBlock.classList.remove('w-form-done');
+          const titleEl = successBlock.querySelector('.modal_cta-form_success_title .h2');
+          const descEl = successBlock.querySelector('.modal_cta-form_success_desc .p6');
+          if (titleEl) {
+            titleEl.textContent = `Thank You, ${name}!`;
+          }
+          if (descEl) {
+            const isPermanent = Boolean(data.storage?.permanent);
+            const waUrl =
+              data.notification?.whatsappUrl ||
+              `https://wa.me/918001247778?text=Hello%20MyTravelExpert!%20Reference%20${serverRef}%20for%20Himalayan%20Tour%20Consultation.%20Name%3A%20${encodeURIComponent(
+                name
+              )}%2C%20Phone%3A%20${encodeURIComponent(phone)}`;
+            descEl.innerHTML = `
+              Reference Number: <strong style="color: #FF4929; font-weight: 700;">#${serverRef}</strong><br/>
+              ${isPermanent ? '<span style="color: #22c55e; font-size: 11px;">✓ Safely stored in our cloud reservation database.</span><br/>' : ''}
+              Our Himalayan holiday experts will review your request and contact <strong>${phone}</strong> promptly.<br/><br/>
+              <a href="${waUrl}" target="_blank" rel="noopener noreferrer"
+                 style="display: inline-block; padding: 10px 18px; background: #25D366; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-top: 6px;">
+                Instant WhatsApp Concierge (+91 8001247778)
+              </a>
+            `;
+          }
+        }
+      } catch (err: any) {
+        showError(err.message || 'Network error. Please message us on WhatsApp (+91 8001247778).');
+        if (btnText) btnText.textContent = originalText;
+        if (submitBtn) submitBtn.style.pointerEvents = 'auto';
+      } finally {
+        isSubmittingWebflow = false;
+      }
+    };
+
+    // Attach to form submit and button click
+    const phoneForm = document.getElementById('phone-form');
+    if (phoneForm) {
+      phoneForm.addEventListener('submit', handleWebflowSubmit);
+    }
+    const formBtn = document.querySelector('[data-form-btn]');
+    if (formBtn) {
+      formBtn.addEventListener('click', handleWebflowSubmit);
+    }
+
+    return () => {
+      if (phoneForm) {
+        phoneForm.removeEventListener('submit', handleWebflowSubmit);
+      }
+      if (formBtn) {
+        formBtn.removeEventListener('click', handleWebflowSubmit);
+      }
+    };
+  }, []);
+
   const filteredPackages = useMemo(
     () =>
       filterAndSortPackages(TOUR_PACKAGES, {
@@ -140,30 +277,41 @@ export default function App() {
     setDrawerOpen(true);
   };
 
-  const saveInquiryToLocalBackup = (refCode: string) => {
+  const saveInquiryToLocalBackup = (
+    refCode: string,
+    override?: { fullName?: string; phone?: string; email?: string; pkg?: string; travelDate?: string; guests?: number; total?: number }
+  ) => {
     let resolvedRef = refCode;
     try {
+      const name = override?.fullName ?? customerName;
+      const phone = override?.phone ?? customerPhone;
+      const email = override?.email ?? customerEmail;
+      const pkgTitle = override?.pkg ?? selectedPackage.title;
+      const tDate = override?.travelDate ?? travelDate;
+      const gCount = override?.guests ?? guests;
+      const tAmount = override?.total ?? quote.finalTotal;
+
       const existing = JSON.parse(localStorage.getItem('mte_inquiries') || '[]');
-      const normalizedPhone = customerPhone.replace(/[\s\-()]/g, '');
+      const normalizedPhone = phone.replace(/[\s\-()]/g, '');
       const duplicate = existing.find(
         (item: { fullName?: string; phone?: string; pkg?: string; travelDate?: string; refCode?: string }) =>
-          (item.fullName || '').trim().toLowerCase() === customerName.trim().toLowerCase() &&
+          (item.fullName || '').trim().toLowerCase() === name.trim().toLowerCase() &&
           (item.phone || '').replace(/[\s\-()]/g, '') === normalizedPhone &&
-          item.pkg === selectedPackage.title &&
-          item.travelDate === travelDate
+          item.pkg === pkgTitle &&
+          item.travelDate === tDate
       );
       if (duplicate && duplicate.refCode) {
         resolvedRef = duplicate.refCode;
       } else {
         existing.push({
           refCode: resolvedRef,
-          fullName: customerName.trim(),
-          phone: customerPhone.trim(),
-          email: customerEmail.trim(),
-          pkg: selectedPackage.title,
-          travelDate,
-          guests,
-          total: quote.finalTotal,
+          fullName: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          pkg: pkgTitle,
+          travelDate: tDate,
+          guests: gCount,
+          total: tAmount,
           date: new Date().toISOString()
         });
         localStorage.setItem('mte_inquiries', JSON.stringify(existing));
