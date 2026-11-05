@@ -4,8 +4,8 @@
  * ============================================================================
  * Lead Systems Architect: Senior Principal Creative Technologist
  * Module: Expedition Quoting, Fleet Allocation & Filter Invariant Matrix
- * Implementation: 100% Hand-Crafted Pure Logic (Zero AI Stubs / Full Unit Test Coverage)
- * Commercial Tier: Custom Enterprise Development Tier 1 (Valuation: ₹25,00,000+ INR)
+ * Pure TypeScript Domain Logic
+ * Bespoke Himalayan Quoting & Transit Logic
  * Copyright (c) 2026 MyTravelExpert. All Rights Reserved.
  * ============================================================================
  */

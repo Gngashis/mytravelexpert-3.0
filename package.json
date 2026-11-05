@@ -2,8 +2,8 @@
   "name": "mytravelexpert-platform",
   "private": true,
   "version": "4.2.0",
-  "description": "Enterprise Himalayan Travel Experience Platform with WebGL Kinetic Shaders, Lenis Smooth Inertia, and Custom Typography Engine",
-  "author": "Apex Interactive Systems & Senior Creative Technologists",
+  "description": "MyTravelExpert 3.0 — Bespoke Himalayan Tour Operating Platform",
+  "author": "MyTravelExpert Engineering",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

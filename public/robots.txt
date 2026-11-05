@@ -20,4 +20,4 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-Sitemap: https://mytravelexpert.co.in/sitemap.xml
+Sitemap: https://www.mytravelexpert.tech/sitemap.xml

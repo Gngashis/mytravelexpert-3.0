@@ -1,7 +1,7 @@
 /**
  * ============================================================================
  * MY TRAVEL EXPERT (MTE) — CLIENT EXPERIENCE & EXPEDITION EXPLORER
- * React 19 Dynamic Quoting Engine & Catalogue Drawer Suite
+ * React 19 Dynamic Quoting Engine, Legal Policy Suite & Catalogue Drawer
  * Copyright (c) 2026 MyTravelExpert. All Rights Reserved.
  * ============================================================================
  */
@@ -21,6 +21,7 @@ import {
 } from './utils/bookingLogic';
 
 type DrawerTab = 'packages' | 'hotels' | 'cabs' | 'calculator';
+export type LegalDocType = 'privacy' | 'terms' | 'booking' | 'cancellation' | null;
 
 function formatInr(amount: number): string {
   return `₹${Math.round(amount).toLocaleString('en-IN')}`;
@@ -32,6 +33,9 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedPkgId, setExpandedPkgId] = useState<string | null>(TOUR_PACKAGES[0]?.id || null);
+
+  // Legal Policy Viewer Modal State
+  const [legalModalDoc, setLegalModalDoc] = useState<LegalDocType>(null);
 
   // Live VIP Quote Calculator & Booking State
   const [selectedPkgId, setSelectedPkgId] = useState<string>(TOUR_PACKAGES[0]?.id || '');
@@ -45,17 +49,28 @@ export default function App() {
   const [customNotes, setCustomNotes] = useState<string>(' Bagdogra Airport (IXB) Pickup');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [bookingConfirmed, setBookingConfirmed] = useState<boolean>(false);
+  const [bookingReference, setBookingReference] = useState<string>('');
 
-  // Bridge clicks from the native Son Daven DOM ([data-mte-open="catalogue"]) into the React Explorer Drawer
+  // Bridge clicks from the Webflow DOM ([data-mte-open] and [data-mte-policy])
   useEffect(() => {
     const handleDocumentClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
-      const trigger = target.closest('[data-mte-open]');
-      if (trigger) {
+
+      const policyTrigger = target.closest('[data-mte-policy]');
+      if (policyTrigger) {
         e.preventDefault();
         e.stopPropagation();
-        const mode = trigger.getAttribute('data-mte-open');
+        const doc = policyTrigger.getAttribute('data-mte-policy') as LegalDocType;
+        setLegalModalDoc(doc || 'privacy');
+        return;
+      }
+
+      const openTrigger = target.closest('[data-mte-open]');
+      if (openTrigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        const mode = openTrigger.getAttribute('data-mte-open');
         if (mode === 'calculator') {
           setActiveTab('calculator');
         } else {
@@ -64,20 +79,25 @@ export default function App() {
         setDrawerOpen(true);
       }
     };
+
     document.addEventListener('click', handleDocumentClick, true);
     return () => document.removeEventListener('click', handleDocumentClick, true);
   }, []);
 
-  // Keyboard accessibility: dismiss drawer on Escape key
+  // Keyboard accessibility: dismiss modals on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && drawerOpen) {
-        setDrawerOpen(false);
+      if (e.key === 'Escape') {
+        if (legalModalDoc) {
+          setLegalModalDoc(null);
+        } else if (drawerOpen) {
+          setDrawerOpen(false);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [drawerOpen]);
+  }, [drawerOpen, legalModalDoc]);
 
   const filteredPackages = useMemo(
     () =>
@@ -120,7 +140,7 @@ export default function App() {
     const validation = validateInquiryForm({
       fullName: customerName,
       phone: customerPhone,
-      email: customerEmail || 'guest@mytravelexpert.co.in',
+      email: customerEmail || 'guest@mytravelexpert.tech',
       subject: selectedPackage.title,
       travelMonth: travelDate,
       guests,
@@ -131,12 +151,32 @@ export default function App() {
       return;
     }
     setFormErrors({});
+    const refCode = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
+    setBookingReference(refCode);
     setBookingConfirmed(true);
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('mte_inquiries') || '[]');
+      existing.push({
+        refCode,
+        fullName: customerName,
+        phone: customerPhone,
+        email: customerEmail,
+        pkg: selectedPackage.title,
+        travelDate,
+        guests,
+        total: quote.finalTotal,
+        date: new Date().toISOString()
+      });
+      localStorage.setItem('mte_inquiries', JSON.stringify(existing));
+    } catch {
+      // Storage unavailable fallback
+    }
   };
 
   return (
     <div className="mte-portal">
-      {/* Floating Quick-Access Button to open the Full 16-Package / 6-Hotel / 13-Cab Catalogue & VIP Calculator */}
+      {/* Floating Quick-Access Bar to open the Full Catalogue & VIP Calculator */}
       <div
         style={{
           position: 'fixed',
@@ -183,6 +223,239 @@ export default function App() {
           </span>
         </button>
       </div>
+
+      {/* IN-APP LEGAL POLICY & TRUST MODAL DIALOG */}
+      {legalModalDoc && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="MyTravelExpert Official Legal and Trust Policy"
+          data-lenis-prevent="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            backgroundColor: 'rgba(15, 18, 15, 0.88)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px',
+          }}
+          onClick={() => setLegalModalDoc(null)}
+        >
+          <div
+            data-lenis-prevent="true"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '860px',
+              maxHeight: '90vh',
+              backgroundColor: '#262D26',
+              color: '#F6F4EF',
+              border: '1px solid rgba(246, 244, 239, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.6)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '20px 28px',
+                borderBottom: '1px solid rgba(246, 244, 239, 0.14)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                backgroundColor: '#1F261F',
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    color: '#FF4929',
+                    display: 'block',
+                    marginBottom: '4px',
+                  }}
+                >
+                  MyTravelExpert Trust &amp; Legal Transparency
+                </span>
+                <h2 style={{ fontSize: '22px', fontWeight: 600, margin: 0, color: '#FFFFFF' }}>
+                  {legalModalDoc === 'privacy' && 'Privacy Policy'}
+                  {legalModalDoc === 'terms' && 'Terms and Conditions'}
+                  {legalModalDoc === 'booking' && 'Booking & Payment Policy'}
+                  {legalModalDoc === 'cancellation' && 'Cancellation & Refund Policy'}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLegalModalDoc(null)}
+                style={{
+                  backgroundColor: 'transparent',
+                  color: '#F6F4EF',
+                  border: '1px solid rgba(246, 244, 239, 0.3)',
+                  padding: '8px 14px',
+                  fontSize: '12px',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                }}
+              >
+                Close ✕
+              </button>
+            </div>
+
+            {/* Quick Switcher Tabs */}
+            <div
+              style={{
+                display: 'flex',
+                borderBottom: '1px solid rgba(246, 244, 239, 0.12)',
+                backgroundColor: '#1B211B',
+                padding: '0 28px',
+                gap: '8px',
+                overflowX: 'auto',
+              }}
+            >
+              {[
+                { id: 'privacy', label: 'Privacy Policy' },
+                { id: 'terms', label: 'Terms & Conditions' },
+                { id: 'booking', label: 'Booking Policy' },
+                { id: 'cancellation', label: 'Cancellation & Refunds' },
+              ].map((tab) => {
+                const active = legalModalDoc === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setLegalModalDoc(tab.id as LegalDocType)}
+                    style={{
+                      padding: '12px 14px',
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      border: 'none',
+                      borderBottom: active ? '2px solid #FF4929' : '2px solid transparent',
+                      backgroundColor: 'transparent',
+                      color: active ? '#FF4929' : '#B6BEB6',
+                      fontWeight: active ? 600 : 400,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Modal Body Content */}
+            <div
+              data-lenis-prevent="true"
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: '24px 28px',
+                fontSize: '14px',
+                lineHeight: 1.68,
+                color: '#D4DDD4',
+              }}
+            >
+              {legalModalDoc === 'privacy' && (
+                <div>
+                  <div
+                    style={{
+                      background: 'rgba(255, 73, 41, 0.1)',
+                      borderLeft: '4px solid #FF4929',
+                      padding: '12px 16px',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <strong>Corporate Entity:</strong> MyTravelExpert, Bagdogra Bhujiapani, M.E.S. Colony, P.O. &amp; P.S. – Bagdogra, District Darjeeling, West Bengal - 734014. Helpline: +91 8001247778.
+                  </div>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>1. Scope &amp; Personal Data Handling</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    We collect traveler names, mobile numbers, emails, and mandatory government photo identification solely for the purpose of booking accommodations, securing dedicated mountain vehicles, and obtaining official Protected Area Permits (PAP) from Indian military checkposts and Bhutan immigration.
+                  </p>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>2. Data Protection Guarantee</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    We never sell, rent, or trade your data to marketing third parties. Permit documentation is securely discarded following the completion of your itinerary in accordance with the Digital Personal Data Protection standards of India.
+                  </p>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>3. Anti-Scam &amp; Business Distinction</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    MyTravelExpert operates strictly through <strong>https://www.mytravelexpert.tech</strong> and verified contact channels (+91 8001247778 / infomytravelexpert4306@gmail.com). We never request UPI passwords or unsolicited funds transfers to unauthorized third parties.
+                  </p>
+                  <p>
+                    For the complete standalone policy document, visit our <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#FF4929', textDecoration: 'underline' }}>Privacy Policy Webpage</a>.
+                  </p>
+                </div>
+              )}
+
+              {legalModalDoc === 'terms' && (
+                <div>
+                  <div
+                    style={{
+                      background: 'rgba(255, 73, 41, 0.1)',
+                      borderLeft: '4px solid #FF4929',
+                      padding: '12px 16px',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    <strong>Jurisdiction:</strong> Governed by the courts of District Darjeeling / Siliguri, West Bengal, India.
+                  </div>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>1. Inclusions &amp; Pricing</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    All tour packages include designated private mountain transit (fuel, driver lodging, tolls, parking), hotel stays with specified meal plans, and standard permit processing. Optional vehicle upgrades or high-altitude heater surcharges are explicitly detailed prior to confirmation.
+                  </p>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>2. Mountain Weather &amp; Road Advisories</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    Transit across high passes (Nathula at 14,140 ft, Zero Point at 15,300 ft, and Zuluk) is subject to Border Roads Organisation (BRO) clearance and weather safety. If a pass is closed by authorities, our dispatch desk immediately arranges alternative scenic circuits.
+                  </p>
+                  <p>
+                    Full details available at <a href="/terms.html" target="_blank" rel="noopener noreferrer" style={{ color: '#FF4929', textDecoration: 'underline' }}>Terms &amp; Conditions Webpage</a>.
+                  </p>
+                </div>
+              )}
+
+              {legalModalDoc === 'booking' && (
+                <div>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>1. Reservation Process</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    Trips are confirmed via formal booking vouchers bearing reference numbers (#MTE-XXXXX). A 20% advance hold secures your hotel categories and vehicle allocation.
+                  </p>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>2. 10% VIP Club Benefit</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    The 10% VIP Club discount applies to all customized first bookings made online or through our concierge desk. Free date rescheduling is permitted up to 14 days before tour arrival.
+                  </p>
+                  <p>
+                    Review full policy at <a href="/booking-policy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#FF4929', textDecoration: 'underline' }}>Booking Policy Webpage</a>.
+                  </p>
+                </div>
+              )}
+
+              {legalModalDoc === 'cancellation' && (
+                <div>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>Fair Refund Slabs</h3>
+                  <ul style={{ paddingLeft: '20px', marginBottom: '16px' }}>
+                    <li><strong>30+ Days Prior:</strong> 90% Refund (10% administrative retention).</li>
+                    <li><strong>15–29 Days Prior:</strong> 75% Refund.</li>
+                    <li><strong>7–14 Days Prior:</strong> 50% Refund.</li>
+                    <li><strong>Under 7 Days:</strong> 100% retention with 12-month travel credit voucher options available.</li>
+                  </ul>
+                  <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>Refund Execution</h3>
+                  <p style={{ marginBottom: '16px' }}>
+                    Refunds are processed back to the original payment source within 5 to 7 banking days with official bank UTR confirmation.
+                  </p>
+                  <p>
+                    Review the full schedule at <a href="/cancellation-refund-policy.html" target="_blank" rel="noopener noreferrer" style={{ color: '#FF4929', textDecoration: 'underline' }}>Cancellation &amp; Refund Policy Webpage</a>.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Full Interactive Catalogue & Live 10% VIP Quote Drawer */}
       {drawerOpen && (
@@ -1032,6 +1305,42 @@ export default function App() {
                       />
                     </div>
 
+                    <div style={{ fontSize: '11px', color: '#666' }}>
+                      By confirming, you agree to our{' '}
+                      <button
+                        type="button"
+                        onClick={() => setLegalModalDoc('terms')}
+                        style={{
+                          border: 'none',
+                          background: 'none',
+                          color: '#FF4929',
+                          textDecoration: 'underline',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontSize: '11px',
+                        }}
+                      >
+                        Terms &amp; Conditions
+                      </button>{' '}
+                      and{' '}
+                      <button
+                        type="button"
+                        onClick={() => setLegalModalDoc('privacy')}
+                        style={{
+                          border: 'none',
+                          background: 'none',
+                          color: '#FF4929',
+                          textDecoration: 'underline',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontSize: '11px',
+                        }}
+                      >
+                        Privacy Policy
+                      </button>
+                      .
+                    </div>
+
                     <button
                       type="submit"
                       style={{
@@ -1156,15 +1465,34 @@ export default function App() {
                           }}
                         >
                           <div style={{ fontWeight: 700, color: '#FF4929', marginBottom: '4px' }}>
-                            ✓ Inquiry Confirmed — Reference #MTE-{Math.floor(1000 + guests * 137)}
+                            ✓ Inquiry Confirmed — Reference #{bookingReference}
                           </div>
-                          <div>
+                          <div style={{ marginBottom: '10px' }}>
                             Thank you, <strong>{customerName}</strong>! Our Bagdogra travel desk (
                             {COMPANY_INFO.phone}) has reserved your{' '}
                             <strong>{selectedPackage.title}</strong> VIP quote for{' '}
                             <strong>{travelDate}</strong> and will reach out on{' '}
                             <strong>{customerPhone}</strong> shortly.
                           </div>
+                          <a
+                            href={`https://wa.me/918001247778?text=${encodeURIComponent(
+                              `Hello MyTravelExpert! Reference ${bookingReference} for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: 'inline-block',
+                              padding: '8px 14px',
+                              backgroundColor: '#25D366',
+                              color: '#FFFFFF',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              textDecoration: 'none',
+                              borderRadius: '2px',
+                            }}
+                          >
+                            Open Instant WhatsApp Chat →
+                          </a>
                         </div>
                       )}
                     </div>
@@ -1184,6 +1512,71 @@ export default function App() {
                       <div style={{ marginTop: '4px' }}>
                         <strong>Direct Support:</strong> {COMPANY_INFO.phone} •{' '}
                         {COMPANY_INFO.email}
+                      </div>
+                      <div style={{ marginTop: '10px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          onClick={() => setLegalModalDoc('privacy')}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#FF4929',
+                            fontSize: '11px',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            padding: 0,
+                          }}
+                        >
+                          Privacy Policy
+                        </button>
+                        <span>•</span>
+                        <button
+                          type="button"
+                          onClick={() => setLegalModalDoc('terms')}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#FF4929',
+                            fontSize: '11px',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            padding: 0,
+                          }}
+                        >
+                          Terms
+                        </button>
+                        <span>•</span>
+                        <button
+                          type="button"
+                          onClick={() => setLegalModalDoc('booking')}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#FF4929',
+                            fontSize: '11px',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            padding: 0,
+                          }}
+                        >
+                          Booking Policy
+                        </button>
+                        <span>•</span>
+                        <button
+                          type="button"
+                          onClick={() => setLegalModalDoc('cancellation')}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#FF4929',
+                            fontSize: '11px',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            padding: 0,
+                          }}
+                        >
+                          Refunds
+                        </button>
                       </div>
                     </div>
                   </div>
