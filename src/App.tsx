@@ -1,12 +1,7 @@
 /**
  * ============================================================================
- * MY TRAVEL EXPERT (MTE) — ENTERPRISE DIGITAL CLIENT EXPERIENCE SUITE
- * ----------------------------------------------------------------------------
- * Handcrafted Bespoke Architecture: React 19 Concurrent State Architecture,
- * Dynamic Quoting Engine, and Inertial DOM Hydration Synchronization.
- * Engineering Standard: Senior Principal Frontend Architect & Creative Technologist
- * Commercial Valuation Tier: Custom Enterprise Production Tier (₹22L – ₹32L INR)
- * Methodology: 100% Manually Programmed — Zero AI Stubs or Automated Builders.
+ * MY TRAVEL EXPERT (MTE) — CLIENT EXPERIENCE & EXPEDITION EXPLORER
+ * React 19 Dynamic Quoting Engine & Catalogue Drawer Suite
  * Copyright (c) 2026 MyTravelExpert. All Rights Reserved.
  * ============================================================================
  */
@@ -72,6 +67,17 @@ export default function App() {
     document.addEventListener('click', handleDocumentClick, true);
     return () => document.removeEventListener('click', handleDocumentClick, true);
   }, []);
+
+  // Keyboard accessibility: dismiss drawer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && drawerOpen) {
+        setDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [drawerOpen]);
 
   const filteredPackages = useMemo(
     () =>
@@ -181,6 +187,9 @@ export default function App() {
       {/* Full Interactive Catalogue & Live 10% VIP Quote Drawer */}
       {drawerOpen && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Expedition Catalogue and VIP Quote Builder"
           data-lenis-prevent="true"
           style={{
             position: 'fixed',
@@ -385,8 +394,8 @@ export default function App() {
                         >
                           <div
                             style={{
-                              display: 'grid',
-                              gridTemplateColumns: '180px 1fr auto',
+                              display: 'flex',
+                              flexWrap: 'wrap',
                               gap: '18px',
                               alignItems: 'start',
                             }}
@@ -396,12 +405,14 @@ export default function App() {
                               alt={pkg.title}
                               style={{
                                 width: '180px',
+                                minWidth: '160px',
                                 height: '125px',
                                 objectFit: 'cover',
                                 display: 'block',
+                                flexShrink: 0,
                               }}
                             />
-                            <div>
+                            <div style={{ flex: '1 1 240px' }}>
                               <div
                                 style={{
                                   fontSize: '11px',
