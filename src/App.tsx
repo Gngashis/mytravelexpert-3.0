@@ -235,7 +235,7 @@ export default function App() {
         data.referenceCode || `MTE-${Math.floor(100000 + Math.random() * 900000)}`
       );
       const finalRef = saveInquiryToLocalBackup(serverRef);
-      setServerPersisted(Boolean(data.storage?.persisted));
+      setServerPersisted(Boolean(data.storage?.permanent));
       setEmailNotified(Boolean(data.notification?.emailSent));
       setBookingReference(finalRef);
       setBookingConfirmed(true);
@@ -1638,7 +1638,7 @@ export default function App() {
                             {emailNotified
                               ? 'Bagdogra Desk Notified by Email'
                               : serverPersisted
-                              ? 'Saved to Server & Ready for Instant Dispatch'
+                              ? 'Saved to Cloud Database & Ready for Priority Dispatch'
                               : 'Quote Prepared — Dispatch to Confirm'}
                           </div>
                           <div style={{ marginBottom: '10px' }}>
@@ -1647,7 +1647,9 @@ export default function App() {
                             under reference <strong>{bookingReference}</strong>.{' '}
                             {emailNotified
                               ? `An automated notification has been dispatched to our Bagdogra operations desk (${COMPANY_INFO.phone}) for callback on ${customerPhone}. You may also connect immediately via WhatsApp or Email:`
-                              : `For immediate priority confirmation and callback on ${customerPhone}, you can also send your quote reference directly to our Bagdogra travel desk (${COMPANY_INFO.phone}) via WhatsApp or Email below:`}
+                              : serverPersisted
+                              ? `Your enquiry is permanently recorded in our cloud booking database. For immediate instant priority, you can also send your quote reference directly to our Bagdogra travel desk (${COMPANY_INFO.phone}) via WhatsApp or Email below:`
+                              : `For immediate priority confirmation and callback on ${customerPhone}, please send your quote reference directly to our Bagdogra travel desk (${COMPANY_INFO.phone}) via WhatsApp or Email below:`}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                             <a

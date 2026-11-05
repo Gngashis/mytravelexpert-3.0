@@ -288,7 +288,34 @@ async function persistEnquiryRecord(record) {
     warnings.push(`file_journal_error:${err instanceof Error ? err.message : 'unknown'}`);
   }
 
-  // 3. Vercel KV / Upstash Redis REST API (if configured)
+  // 3. Vercel Blob permanent cloud record storage (using BLOB_READ_WRITE_TOKEN)
+  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  if (blobToken) {
+    try {
+      const blobUrl = `https://blob.vercel-storage.com/enquiries/${record.referenceCode}.json`;
+      const blobRes = await fetch(blobUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${blobToken}`,
+          'x-api-version': '7',
+          'x-vercel-blob-access': 'private',
+          'x-content-type': 'application/json',
+          'x-add-random-suffix': '0',
+          'x-allow-overwrite': '1',
+        },
+        body: JSON.stringify(record, null, 2),
+      });
+      if (blobRes.ok) {
+        adapters.push('vercel_blob');
+      } else {
+        warnings.push(`vercel_blob_http_${blobRes.status}`);
+      }
+    } catch {
+      warnings.push('vercel_blob_network_error');
+    }
+  }
+
+  // 4. Vercel KV / Upstash Redis REST API (if configured)
   const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
   if (kvUrl && kvToken) {
@@ -311,7 +338,7 @@ async function persistEnquiryRecord(record) {
     }
   }
 
-  // 4. Supabase PostgreSQL REST API (if configured)
+  // 5. Supabase PostgreSQL REST API (if configured)
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (supabaseUrl && supabaseKey) {
@@ -351,7 +378,7 @@ async function persistEnquiryRecord(record) {
     }
   }
 
-  // 5. Custom Webhook / CRM / Google Sheets Apps Script Webhook (if configured)
+  // 6. Custom Webhook / CRM / Google Sheets Apps Script Webhook (if configured)
   const webhookUrl = process.env.MTE_ENQUIRY_WEBHOOK_URL;
   if (webhookUrl) {
     try {
@@ -380,12 +407,17 @@ async function persistEnquiryRecord(record) {
     }
   }
 
-  // 6. Structured cloud runtime audit log (captured by Vercel Logs / Log Drains)
+  // 7. Structured cloud runtime audit log (captured by Vercel Logs / Log Drains)
   console.info('[MTE_ENQUIRY_PERSISTED]', JSON.stringify(record));
   adapters.push('cloud_audit_log');
 
+  const isPermanent = adapters.some((a) =>
+    ['vercel_blob', 'supabase_postgres', 'vercel_kv_redis', 'custom_webhook'].includes(a)
+  );
+
   return {
     persisted: adapters.length > 0,
+    permanent: isPermanent,
     adapters,
     warnings,
   };
@@ -620,13 +652,19 @@ export default async function handler(req, res) {
       capabilities: {
         validation: true,
         spamProtection: true,
-        persistentStorage: true,
-        externalDbConfigured: Boolean(
-          process.env.KV_REST_API_URL ||
+        persistentStorage: Boolean(
+          process.env.BLOB_READ_WRITE_TOKEN ||
+            process.env.KV_REST_API_URL ||
             process.env.UPSTASH_REDIS_REST_URL ||
             process.env.SUPABASE_URL ||
             process.env.MTE_ENQUIRY_WEBHOOK_URL
         ),
+        storageAdapters: [
+          process.env.BLOB_READ_WRITE_TOKEN ? 'vercel_blob' : null,
+          process.env.SUPABASE_URL ? 'supabase_postgres' : null,
+          process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL ? 'redis' : null,
+          process.env.MTE_ENQUIRY_WEBHOOK_URL ? 'webhook' : null,
+        ].filter(Boolean),
         emailNotificationConfigured: Boolean(
           process.env.RESEND_API_KEY ||
             process.env.SENDGRID_API_KEY ||
@@ -743,7 +781,9 @@ export default async function handler(req, res) {
     },
     storage: {
       persisted: storageResult.persisted,
+      permanent: storageResult.permanent,
       adapters: storageResult.adapters,
+      warnings: storageResult.warnings,
     },
     notification: {
       emailConfigured: emailResult.emailConfigured,
