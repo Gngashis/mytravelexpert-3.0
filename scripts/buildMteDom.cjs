@@ -278,7 +278,7 @@ const exactReplacements = [
   ['A café patisserie with freshly baked pastries and desserts.', 'Udaan Woodberry (Gangtok 4★) &amp; Summit Newa Regency (Pelling 4★).'],
   ['A lobby bar with signature cocktails and a refined atmosphere.', 'Verified mountain-view homestays in Lachung, Sillery Gaon, Zuluk &amp; Takdah.'],
 
-  ['When even the sheep guide you to yoga...', '17+ Dedicated Mountain Fleet'],
+  ['When even the sheep guide you to yoga...', '13+ Dedicated Mountain Fleet'],
   ['Our design hotel offers everything you need to stay active.', 'Sanitized, GPS-tracked hill vehicles driven by experienced local mountain captains.'],
   ['A fitness center with modern equipment.', 'Luxury SUVs: Toyota Innova Crysta, Mahindra Scorpio, Xylo &amp; Bolero.'],
   ['Dedicated spaces for group workouts.', 'Comfort Sedans &amp; MPVs: Maruti Ertiga, Swift Dzire &amp; WagonR.'],
@@ -327,7 +327,7 @@ const exactReplacements = [
 
   // Apartments Header
   ['<h2 class="p6 text-dark a-center">Apartments</h2>', '<h2 class="p6 text-dark a-center">Tour Packages &amp; Fleet</h2>'],
-  ['One- to three-bedroom units designed for solo travelers, couples, or families. Panoramic windows, spacious terraces, and natural textures and materials elevate the experience of a Carpathian getaway.', '16 handcrafted tour packages, 6 partner 5★/4★ luxury resorts, and 17+ verified mountain vehicles designed for solo travellers, couples, families, and groups across the Eastern Himalayas.'],
+  ['One- to three-bedroom units designed for solo travelers, couples, or families. Panoramic windows, spacious terraces, and natural textures and materials elevate the experience of a Carpathian getaway.', '16 handcrafted tour packages, 6 partner 5★/4★ luxury resorts, and 13+ verified mountain vehicles designed for solo travellers, couples, families, and groups across the Eastern Himalayas.'],
   ['The design features Hutsul touches that bring genuine authenticity to the space.', 'Every package includes private Bagdogra/NJP pickup, inner-line permits, and our 10% VIP Club discount.'],
   ['<h4 class="p6 text-dark">types</h4>', '<h4 class="p6 text-dark">categories</h4>'],
 
@@ -442,7 +442,7 @@ const exactReplacements = [
   ['This is a fair system: the larger the area of the apartment, the higher the income. For example,37.23 m² — ≈ 13 030 $/year.', 'Yes! Because our headquarters is located right in Bagdogra (Bhujiapani, M.E.S. Colony), our driver and local representative greet you directly at Bagdogra Airport (IXB) or NJP Station with zero wait time.'],
   ['This is a fair system: the larger the area of the apartment, the higher the income. For example,37.23 m² — ≈ 13\u00a0030 $/year.', 'Yes! Because our headquarters is located right in Bagdogra (Bhujiapani, M.E.S. Colony), our driver and local representative greet you directly at Bagdogra Airport (IXB) or NJP Station with zero wait time.'],
   ['Are there any guarantees that the construction will be completed?', 'What types of vehicles do you provide for mountain roads?'],
-  ['The construction is carried out in stages: section 1 — IV quarter 2027, section 2 — I sq. in 2028. There is an approved schedule, licenses, open documents and a partner construction company with experience in the implementation of large objects.', 'We operate a dedicated fleet of 17+ mountain-ready vehicles including Toyota Innova Crysta, Mahindra Scorpio, Xylo, Bolero, Maruti Ertiga, WagonR, Dzire, Force Tempo Traveller (13–26 seater), and Luxury Coasters driven by experienced hill drivers.'],
+  ['The construction is carried out in stages: section 1 — IV quarter 2027, section 2 — I sq. in 2028. There is an approved schedule, licenses, open documents and a partner construction company with experience in the implementation of large objects.', 'We operate a dedicated fleet of 13+ mountain-ready vehicles including Toyota Innova Crysta, Mahindra Scorpio, Xylo, Bolero, Maruti Ertiga, WagonR, Dzire, Force Tempo Traveller (13–26 seater), and Luxury Coasters driven by experienced hill drivers.'],
   ['Why not just buy an apartment in Yaremche and rent it yourself?', 'What is the best time of year to visit Darjeeling, Sikkim, and Bhutan?'],
   ['Because it&#x27;s a different segment. The aparthotel provides: professional service, booking through international systems, marketing and stable occupancy. Self-rental rarely exceeds 20— 30% of the load.', 'March to June offers pleasant weather and blooming rhododendrons in Yumthang Valley, while October to February brings crystal-clear Kanchenjunga views, festive Bhutan Tshechus, and high-altitude snow at Zero Point and Nathula.'],
   ['Who runs the hotel?', 'Which luxury hotels and resorts do you partner with?'],
@@ -463,8 +463,8 @@ const exactReplacements = [
   ['<h4 class="p6 text-gray">Yaremche</h4>', '<h4 class="p6 text-gray">Regional Hubs</h4>'],
   ['260 Svobody St.', 'Mall Road / Nehru Road, Darjeeling - 734101'],
   ['Svobody St., 280/1', 'MG Marg, Gangtok, Sikkim &amp; Phuentsholing Gate'],
-  ['© 2026 Son Daven. All rights reserved', '© 2026 MyTravelExpert (mytravelexpert.co.in). All rights reserved'],
-  ['© 2026 the Himalayas. All rights reserved', '© 2026 MyTravelExpert (mytravelexpert.co.in). All rights reserved'],
+  ['© 2026 Son Daven. All rights reserved', '© 2026 MyTravelExpert (mytravelexpert.tech). All rights reserved'],
+  ['© 2026 the Himalayas. All rights reserved', '© 2026 MyTravelExpert (mytravelexpert.tech). All rights reserved'],
   ['https://www.facebook.com/blago.sondaven', 'https://mytravelexpert.co.in'],
   ['https://www.instagram.com/sondaven.hotel', 'https://mytravelexpert.co.in'],
   ['Son Daven', 'MyTravelExpert'],
@@ -627,7 +627,7 @@ const tabConfigs = [
     oldArea: '<span>₹2,800</span><div class="h6 inline"> / day</div>',
     newArea: '<span>₹2,800</span><div class="h6 inline"> / day</div>',
     oldPrice: '174 250 грн/м²',
-    newPrice: '17+ Verified Mountain Cabs, SUVs & Luxury Coaches',
+    newPrice: '13+ Verified Mountain Cabs, SUVs & Luxury Coaches',
     oldGuest: '4+2 guests',
     newGuest: 'Hill-Certified Drivers',
     tags: [

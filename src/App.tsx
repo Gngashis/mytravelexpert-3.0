@@ -140,7 +140,7 @@ export default function App() {
     const validation = validateInquiryForm({
       fullName: customerName,
       phone: customerPhone,
-      email: customerEmail || 'guest@mytravelexpert.tech',
+      email: customerEmail,
       subject: selectedPackage.title,
       travelMonth: travelDate,
       guests,
@@ -151,27 +151,40 @@ export default function App() {
       return;
     }
     setFormErrors({});
-    const refCode = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
-    setBookingReference(refCode);
-    setBookingConfirmed(true);
 
+    let refCode = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
     try {
       const existing = JSON.parse(localStorage.getItem('mte_inquiries') || '[]');
-      existing.push({
-        refCode,
-        fullName: customerName,
-        phone: customerPhone,
-        email: customerEmail,
-        pkg: selectedPackage.title,
-        travelDate,
-        guests,
-        total: quote.finalTotal,
-        date: new Date().toISOString()
-      });
-      localStorage.setItem('mte_inquiries', JSON.stringify(existing));
+      const normalizedPhone = customerPhone.replace(/[\s\-()]/g, '');
+      const duplicate = existing.find(
+        (item: { fullName?: string; phone?: string; pkg?: string; travelDate?: string; refCode?: string }) =>
+          (item.fullName || '').trim().toLowerCase() === customerName.trim().toLowerCase() &&
+          (item.phone || '').replace(/[\s\-()]/g, '') === normalizedPhone &&
+          item.pkg === selectedPackage.title &&
+          item.travelDate === travelDate
+      );
+      if (duplicate && duplicate.refCode) {
+        refCode = duplicate.refCode;
+      } else {
+        existing.push({
+          refCode,
+          fullName: customerName.trim(),
+          phone: customerPhone.trim(),
+          email: customerEmail.trim(),
+          pkg: selectedPackage.title,
+          travelDate,
+          guests,
+          total: quote.finalTotal,
+          date: new Date().toISOString()
+        });
+        localStorage.setItem('mte_inquiries', JSON.stringify(existing));
+      }
     } catch {
       // Storage unavailable fallback
     }
+
+    setBookingReference(refCode);
+    setBookingConfirmed(true);
   };
 
   return (
@@ -221,6 +234,27 @@ export default function App() {
             All {TOUR_PACKAGES.length} Packages • {LUXURY_HOTELS.length} Resorts •{' '}
             {TAXI_FLEET.length} Cabs
           </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab('calculator');
+            setDrawerOpen(true);
+          }}
+          style={{
+            backgroundColor: '#FF4929',
+            color: '#FFFFFF',
+            border: 'none',
+            padding: '10px 16px',
+            fontSize: '12px',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.28)',
+          }}
+        >
+          10% VIP Quote &amp; Book
         </button>
       </div>
 
@@ -1288,6 +1322,11 @@ export default function App() {
                           border: '1px solid rgba(31, 38, 31, 0.25)',
                         }}
                       />
+                      {formErrors.email && (
+                        <div style={{ color: '#D92D20', fontSize: '11px', marginTop: '3px' }}>
+                          {formErrors.email}
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -1465,34 +1504,55 @@ export default function App() {
                           }}
                         >
                           <div style={{ fontWeight: 700, color: '#FF4929', marginBottom: '4px' }}>
-                            ✓ Inquiry Confirmed — Reference #{bookingReference}
+                            ✓ Quote Reference #{bookingReference} Prepared — Dispatch to Confirm
                           </div>
                           <div style={{ marginBottom: '10px' }}>
-                            Thank you, <strong>{customerName}</strong>! Our Bagdogra travel desk (
-                            {COMPANY_INFO.phone}) has reserved your{' '}
-                            <strong>{selectedPackage.title}</strong> VIP quote for{' '}
-                            <strong>{travelDate}</strong> and will reach out on{' '}
-                            <strong>{customerPhone}</strong> shortly.
+                            Thank you, <strong>{customerName}</strong>! Your custom VIP quote for{' '}
+                            <strong>{selectedPackage.title}</strong> ({travelDate}) is saved locally.
+                            Please send your quote reference directly to our Bagdogra travel desk (
+                            {COMPANY_INFO.phone}) via WhatsApp or Email below to initiate your
+                            reservation and callback on <strong>{customerPhone}</strong>:
                           </div>
-                          <a
-                            href={`https://wa.me/918001247778?text=${encodeURIComponent(
-                              `Hello MyTravelExpert! Reference ${bookingReference} for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: 'inline-block',
-                              padding: '8px 14px',
-                              backgroundColor: '#25D366',
-                              color: '#FFFFFF',
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              textDecoration: 'none',
-                              borderRadius: '2px',
-                            }}
-                          >
-                            Open Instant WhatsApp Chat →
-                          </a>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <a
+                              href={`https://wa.me/918001247778?text=${encodeURIComponent(
+                                `Hello MyTravelExpert! Reference ${bookingReference} for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Name: ${customerName}, Phone: ${customerPhone}. Estimated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: 'inline-block',
+                                padding: '8px 14px',
+                                backgroundColor: '#25D366',
+                                color: '#FFFFFF',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                borderRadius: '2px',
+                              }}
+                            >
+                              Send Quote on WhatsApp Now →
+                            </a>
+                            <a
+                              href={`mailto:${COMPANY_INFO.email}?subject=${encodeURIComponent(
+                                `VIP Tour Inquiry ${bookingReference} — ${selectedPackage.title}`
+                              )}&body=${encodeURIComponent(
+                                `Hello MyTravelExpert Bagdogra Desk,\n\nPlease find my tour inquiry details below:\n- Reference: ${bookingReference}\n- Name: ${customerName}\n- Phone/WhatsApp: ${customerPhone}\n- Email: ${customerEmail || 'Not provided'}\n- Package: ${selectedPackage.title} (${selectedPackage.durationText})\n- Preferred Travel Period: ${travelDate}\n- Guests: ${guests}\n- Estimated VIP Total: ₹${quote.finalTotal.toLocaleString('en-IN')}\n- Notes: ${customNotes || 'None'}\n\nPlease contact me to confirm availability and itinerary details.`
+                              )}`}
+                              style={{
+                                display: 'inline-block',
+                                padding: '8px 14px',
+                                backgroundColor: '#F6F4EF',
+                                color: '#1F261F',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                borderRadius: '2px',
+                              }}
+                            >
+                              Send Quote via Email →
+                            </a>
+                          </div>
                         </div>
                       )}
                     </div>

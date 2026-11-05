@@ -2,7 +2,6 @@
  * ============================================================================
  * MY TRAVEL EXPERT (MTE) — COMMERCIAL PRICING & TELEMETRY ENGINE
  * ============================================================================
- * Lead Systems Architect: Senior Principal Creative Technologist
  * Module: Expedition Quoting, Fleet Allocation & Filter Invariant Matrix
  * Pure TypeScript Domain Logic
  * Bespoke Himalayan Quoting & Transit Logic
@@ -142,7 +141,8 @@ export function validateInquiryForm(input: InquiryFormInput): ValidationResult {
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!input.email || !emailRegex.test(input.email.trim())) {
+  const trimmedEmail = (input.email || '').trim();
+  if (trimmedEmail.length > 0 && !emailRegex.test(trimmedEmail)) {
     errors.email = 'Please enter a valid email address.';
   }
 
