@@ -494,7 +494,7 @@ export const TOUR_PACKAGES: TourPackage[] = [
     locationLabel: 'Gangtok · Lachen · Gurudongmar · Lachung · Yumthang',
     destinationTag: 'Lachen – A Hidden Gem of Sikkim',
     country: 'India',
-    days: 6,
+    days: 7,
     nights: 6,
     durationText: '6 Nights / 7 Days',
     pax: 6,

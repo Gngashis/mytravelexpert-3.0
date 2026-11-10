@@ -163,3 +163,40 @@
   text-align: right;
   white-space: nowrap;
 }
+
+/* Accessible visible focus states */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #FF4929 !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .mte-compass-slide.s1,
+  .mte-compass-slide.s2,
+  .mte-compass-slide.s3,
+  .mte-compass-slide.s4,
+  .mte-compass-dot,
+  .mte-compass-route-line {
+    animation: none !important;
+  }
+  .mte-compass-slide.s1 {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .mte-compass-slide.s2,
+  .mte-compass-slide.s3,
+  .mte-compass-slide.s4 {
+    display: none !important;
+  }
+}

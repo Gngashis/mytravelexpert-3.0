@@ -322,47 +322,43 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
             <div className="my-10 p-8 border border-[#a89474]/40 bg-[#a89474]/10">
               <div className="flex items-center gap-2 text-xs font-sd-body tracking-[0.14em] uppercase text-[#a89474]">
                 <DiamondStar className="w-2.5 h-2.5" />
-                <span>EXPEDITION INQUIRY CONFIRMED · REF #{submittedRecord.referenceCode}</span>
+                <span>ENQUIRY SUMMARY READY · REF #{submittedRecord.referenceCode}</span>
               </div>
-              <h3 className="font-sd-display text-4xl mt-4">
-                Thank you, {submittedRecord.fullName}. See you in the Himalayas.
+              <h3 className="font-sd-display text-3xl md:text-4xl mt-4">
+                Your enquiry summary is ready. Continue in WhatsApp.
               </h3>
-              <div className="mt-3 text-xs">
-                {submittedRecord.serverPersisted ? (
-                  <span className="inline-flex items-center gap-1.5 text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded">
-                    ✓ Permanently recorded in our cloud booking database (Vercel Blob)
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-amber-300 bg-amber-950/40 border border-amber-500/30 px-3 py-1 rounded">
-                    ⚡ Saved in local browser cache (offline mode). Please share your reference via WhatsApp below.
-                  </span>
-                )}
-              </div>
               <p className="text-sm text-[#a89474]/85 mt-3 leading-relaxed">
-                Our Bagdogra / Darjeeling travel concierge team has logged your request for{' '}
-                <strong>{submittedRecord.subject}</strong> ({submittedRecord.guests} Travelers ·{' '}
-                {submittedRecord.travelMonth}) with an estimated VIP package total of{' '}
-                <strong>₹{submittedRecord.finalTotal.toLocaleString('en-IN')}</strong>. We typically reply within 24 hours.
+                Summary for <strong>{submittedRecord.fullName}</strong>: {submittedRecord.subject} ({submittedRecord.guests} Traveller(s) · {submittedRecord.travelMonth}) with an estimated VIP total of <strong>₹{submittedRecord.finalTotal.toLocaleString('en-IN')}</strong>. Click below to open and deliver your enquiry directly to our Bagdogra desk.
               </p>
 
               <div className="mt-6 pt-6 border-t border-[#a89474]/20 flex flex-wrap items-center gap-4">
                 <a
                   href={`https://wa.me/918001247778?text=${encodeURIComponent(
-                    `Hello MyTravelExpert! My Ref is ${submittedRecord.referenceCode} for ${submittedRecord.subject} (${submittedRecord.guests} guests, ${submittedRecord.travelMonth}). Name: ${submittedRecord.fullName}`
+                    `Hello MyTravelExpert! Inquiry Summary (${submittedRecord.referenceCode}):\n- Package: ${submittedRecord.subject}\n- Travel Period: ${submittedRecord.travelMonth}\n- Travellers: ${submittedRecord.guests}\n- Estimated VIP Total: ₹${submittedRecord.finalTotal.toLocaleString('en-IN')}\n- Name: ${submittedRecord.fullName}\n- Phone: ${phone}\n${email ? `- Email: ${email}\n` : ''}- Notes: ${message || 'Standard custom consultation request'}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="sd-btn text-[#2c2824]"
-                  style={{ '--theme-btn-bg': '#a89474' } as React.CSSProperties}
+                  style={{ '--theme-btn-bg': '#25D366' } as React.CSSProperties}
                 >
-                  <span>Instant WhatsApp Concierge (+91 8001247778)</span>
+                  <span>Open WhatsApp enquiry</span>
+                </a>
+                <a
+                  href={`mailto:${COMPANY_INFO.email}?subject=${encodeURIComponent(
+                    `Himalayan Tour Inquiry ${submittedRecord.referenceCode} — ${submittedRecord.subject}`
+                  )}&body=${encodeURIComponent(
+                    `Hello MyTravelExpert Desk,\n\nPlease find my expedition enquiry details below:\n- Reference: ${submittedRecord.referenceCode}\n- Name: ${submittedRecord.fullName}\n- Phone: ${phone}\n- Email: ${email || 'Not provided'}\n- Package: ${submittedRecord.subject}\n- Travel Period: ${submittedRecord.travelMonth}\n- Travellers: ${submittedRecord.guests}\n- Estimated Total: ₹${submittedRecord.finalTotal.toLocaleString('en-IN')}\n- Notes: ${message || 'None'}\n\nPlease share availability and customized itinerary options.`
+                  )}`}
+                  className="px-4 py-2.5 border border-[#a89474]/50 text-xs font-sd-body uppercase hover:border-[#a89474] text-[#a89474] cursor-pointer"
+                >
+                  Open email enquiry
                 </a>
                 <button
                   type="button"
                   onClick={() => setSubmittedRecord(null)}
-                  className="px-4 py-2.5 border border-[#a89474]/40 text-xs font-sd-body uppercase hover:border-[#a89474] cursor-pointer"
+                  className="px-4 py-2.5 border border-[#a89474]/30 text-xs font-sd-body uppercase hover:border-[#a89474] text-[#a89474]/70 cursor-pointer"
                 >
-                  Plan Another Trip
+                  Edit Enquiry
                 </button>
               </div>
             </div>
