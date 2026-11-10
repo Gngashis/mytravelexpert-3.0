@@ -13,13 +13,15 @@ import {
   TAXI_FLEET,
   TOUR_PACKAGES,
   TourPackage,
+  BLOG_STORIES,
+  BlogStory,
 } from './data/travelData';
 import {
   calculateExpeditionQuote,
   filterAndSortPackages,
   validateInquiryForm,
 } from './utils/bookingLogic';
-import { ConsultationModal } from './components/Modals';
+import { ConsultationModal, BlogReaderModal } from './components/Modals';
 
 type DrawerTab = 'packages' | 'hotels' | 'cabs' | 'calculator';
 export type LegalDocType = 'privacy' | 'terms' | 'booking' | 'cancellation' | null;
@@ -35,11 +37,18 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedPkgId, setExpandedPkgId] = useState<string | null>(TOUR_PACKAGES[0]?.id || null);
 
+  // Focus restoration & containment refs
+  const lastActiveElementRef = React.useRef<HTMLElement | null>(null);
+  const drawerRef = React.useRef<HTMLDivElement | null>(null);
+
   // Legal Policy Viewer Modal State
   const [legalModalDoc, setLegalModalDoc] = useState<LegalDocType>(null);
 
   // Consultation Modal State
   const [isConsultationOpen, setIsConsultationOpen] = useState<boolean>(false);
+
+  // Travel Guide Reader Modal State
+  const [activeStory, setActiveStory] = useState<BlogStory | null>(null);
 
   // Live VIP Quote Calculator & Booking State
   const [selectedPkgId, setSelectedPkgId] = useState<string>(TOUR_PACKAGES[0]?.id || '');
@@ -55,10 +64,8 @@ export default function App() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>('');
-  const [bookingConfirmed, setBookingConfirmed] = useState<boolean>(false);
-  const [bookingReference, setBookingReference] = useState<string>('');
-  const [serverPersisted, setServerPersisted] = useState<boolean>(false);
-  const [emailNotified, setEmailNotified] = useState<boolean>(false);
+  const [summaryReady, setSummaryReady] = useState<boolean>(false);
+  const [enquiryReference, setEnquiryReference] = useState<string>('');
 
   // Bridge clicks from the Webflow DOM ([data-mte-open] and [data-mte-policy])
   useEffect(() => {
@@ -72,6 +79,16 @@ export default function App() {
         e.stopPropagation();
         const doc = policyTrigger.getAttribute('data-mte-policy') as LegalDocType;
         setLegalModalDoc(doc || 'privacy');
+        return;
+      }
+
+      const guideTrigger = target.closest('[data-mte-guide]');
+      if (guideTrigger) {
+        e.preventDefault();
+        e.stopPropagation();
+        const guideId = guideTrigger.getAttribute('data-mte-guide');
+        const found = BLOG_STORIES.find((s) => s.id === guideId) || BLOG_STORIES[0];
+        setActiveStory(found);
         return;
       }
 
@@ -103,16 +120,55 @@ export default function App() {
     return () => document.removeEventListener('click', handleDocumentClick, true);
   }, []);
 
-  // Keyboard accessibility: dismiss modals on Escape key
+  // Keyboard accessibility & Focus Management
+  useEffect(() => {
+    if (drawerOpen) {
+      lastActiveElementRef.current = document.activeElement as HTMLElement | null;
+      // Focus drawer container
+      requestAnimationFrame(() => {
+        if (drawerRef.current) {
+          const focusable = drawerRef.current.querySelector<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable) focusable.focus();
+        }
+      });
+    } else {
+      if (lastActiveElementRef.current && typeof lastActiveElementRef.current.focus === 'function') {
+        lastActiveElementRef.current.focus();
+      }
+    }
+  }, [drawerOpen]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (legalModalDoc) {
           setLegalModalDoc(null);
+        } else if (activeStory) {
+          setActiveStory(null);
         } else if (isConsultationOpen) {
           setIsConsultationOpen(false);
         } else if (drawerOpen) {
           setDrawerOpen(false);
+        }
+      }
+
+      // Focus trap for drawer
+      if (e.key === 'Tab' && drawerOpen && drawerRef.current) {
+        const focusables = drawerRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length > 0) {
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
         }
       }
     };
@@ -144,14 +200,15 @@ export default function App() {
       const showError = (msg: string) => {
         const errEl = document.createElement('div');
         errEl.className = 'mte-wf-form-error';
-        errEl.style.cssText = 'color: #ef4444; font-size: 11px; margin-top: 8px; font-weight: 500;';
+        errEl.setAttribute('role', 'alert');
+        errEl.style.cssText = 'color: #ef4444; font-size: 12px; margin-top: 8px; font-weight: 600;';
         errEl.textContent = msg;
         const inputList = phoneForm.querySelector('.input-list');
         if (inputList) inputList.appendChild(errEl);
       };
 
       if (!name || name.length < 2) {
-        showError('Please enter your full name (minimum 2 characters).');
+        showError('Please enter your full name (at least 2 characters).');
         nameInput?.focus();
         return;
       }
@@ -168,11 +225,14 @@ export default function App() {
       const originalText = btnText?.textContent || 'Get Free Custom Quote';
 
       isSubmittingWebflow = true;
-      if (btnText) btnText.textContent = 'Securing Quote...';
+      if (btnText) btnText.textContent = 'Preparing Summary...';
       if (submitBtn) submitBtn.style.pointerEvents = 'none';
 
       try {
-        const res = await fetch('/api/enquiry', {
+        const serverRef = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
+
+        // Send to enquiry endpoint if available for logging, but do not claim confirmed booking
+        fetch('/api/enquiry', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -183,15 +243,8 @@ export default function App() {
             guests: 2,
             notes: 'Enquiry via Webflow header & hero consultation modal',
           }),
-        });
+        }).catch(() => {});
 
-        const data = await res.json().catch(() => null);
-
-        if (!res.ok || !data?.ok) {
-          throw new Error(data?.error || 'Unable to submit quote request. Please retry or message WhatsApp.');
-        }
-
-        const serverRef = String(data.referenceCode || `MTE-${Math.floor(100000 + Math.random() * 900000)}`);
         saveInquiryToLocalBackup(serverRef, {
           fullName: name,
           phone,
@@ -199,7 +252,7 @@ export default function App() {
           guests: 2,
         });
 
-        // Hide form and display rich confirmation state
+        // Hide form and display honest handoff screen
         phoneForm.style.display = 'none';
         const successBlock = document.querySelector('.modal_cta-form_success') as HTMLElement | null;
         if (successBlock) {
@@ -208,28 +261,33 @@ export default function App() {
           const titleEl = successBlock.querySelector('.modal_cta-form_success_title .h2');
           const descEl = successBlock.querySelector('.modal_cta-form_success_desc .p6');
           if (titleEl) {
-            titleEl.textContent = `Thank You, ${name}!`;
+            titleEl.textContent = 'Your enquiry summary is ready.';
           }
           if (descEl) {
-            const isPermanent = Boolean(data.storage?.permanent);
-            const waUrl =
-              data.notification?.whatsappUrl ||
-              `https://wa.me/918001247778?text=Hello%20MyTravelExpert!%20Reference%20${serverRef}%20for%20Himalayan%20Tour%20Consultation.%20Name%3A%20${encodeURIComponent(
-                name
-              )}%2C%20Phone%3A%20${encodeURIComponent(phone)}`;
+            const waMsg = `Hello MyTravelExpert! Inquiry Summary (#${serverRef}):\n- Package: Custom Himalayan Tour (Darjeeling/Sikkim/Bhutan)\n- Guests: 2 Travellers\n- Name: ${name}\n- Phone: ${phone}\n- Note: Requesting customized itinerary & 10% VIP quote.`;
+            const waUrl = `https://wa.me/918001247778?text=${encodeURIComponent(waMsg)}`;
+            const mailtoUrl = `mailto:${COMPANY_INFO.email}?subject=${encodeURIComponent(
+              `Custom Himalayan Tour Enquiry #${serverRef}`
+            )}&body=${encodeURIComponent(waMsg)}`;
+
             descEl.innerHTML = `
               Reference Number: <strong style="color: #FF4929; font-weight: 700;">#${serverRef}</strong><br/>
-              ${isPermanent ? '<span style="color: #22c55e; font-size: 11px;">✓ Safely stored in our cloud reservation database.</span><br/>' : ''}
-              Our Himalayan holiday experts will review your request and contact <strong>${phone}</strong> promptly.<br/><br/>
-              <a href="${waUrl}" target="_blank" rel="noopener noreferrer"
-                 style="display: inline-block; padding: 10px 18px; background: #25D366; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 12px; margin-top: 6px;">
-                Instant WhatsApp Concierge (+91 8001247778)
-              </a>
+              Your enquiry details have been prepared for <strong>${name}</strong> (${phone}). To deliver your request directly to our Bagdogra desk, please choose an option below:<br/><br/>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <a href="${waUrl}" target="_blank" rel="noopener noreferrer"
+                   style="display: inline-block; padding: 12px 18px; background: #25D366; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 13px;">
+                  Open WhatsApp enquiry
+                </a>
+                <a href="${mailtoUrl}"
+                   style="display: inline-block; padding: 12px 18px; background: #EFECE4; color: #1F261F; text-decoration: none; border: 1px solid rgba(31,38,31,0.2); border-radius: 4px; font-weight: 600; font-size: 13px;">
+                  Open email enquiry
+                </a>
+              </div>
             `;
           }
         }
       } catch (err: any) {
-        showError(err.message || 'Network error. Please message us on WhatsApp (+91 8001247778).');
+        showError(err.message || 'Error preparing enquiry. Please message us directly on WhatsApp (+91 8001247778).');
         if (btnText) btnText.textContent = originalText;
         if (submitBtn) submitBtn.style.pointerEvents = 'auto';
       } finally {
@@ -288,7 +346,7 @@ export default function App() {
 
   const handleBookPackage = (pkg: TourPackage) => {
     setSelectedPkgId(pkg.id);
-    setBookingConfirmed(false);
+    setSummaryReady(false);
     setActiveTab('calculator');
     setDrawerOpen(true);
   };
@@ -354,14 +412,17 @@ export default function App() {
     });
     if (!validation.valid) {
       setFormErrors(validation.errors as Record<string, string>);
-      setBookingConfirmed(false);
+      setSummaryReady(false);
       return;
     }
     setFormErrors({});
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/enquiry', {
+      const generatedRef = `MTE-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      // Background telemetry/logging if endpoint available, but do not show false success if it fails
+      fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -378,42 +439,17 @@ export default function App() {
           source: 'booking_modal',
           website: honeypotWebsite,
         }),
-      });
+      }).catch(() => {});
 
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok || !data?.ok) {
-        if (data?.errors && typeof data.errors === 'object') {
-          setFormErrors(data.errors as Record<string, string>);
-        }
-        setSubmitError(
-          data?.error ||
-            'Unable to process your enquiry at this moment. Please check your details or message us on WhatsApp (+91 8001247778).'
-        );
-        setBookingConfirmed(false);
-        setIsSubmitting(false);
-        return;
-      }
-
-      const serverRef = String(
-        data.referenceCode || `MTE-${Math.floor(100000 + Math.random() * 900000)}`
-      );
-      const finalRef = saveInquiryToLocalBackup(serverRef);
-      setServerPersisted(Boolean(data.storage?.permanent));
-      setEmailNotified(Boolean(data.notification?.emailSent));
-      setBookingReference(finalRef);
-      setBookingConfirmed(true);
+      const finalRef = saveInquiryToLocalBackup(generatedRef);
+      setEnquiryReference(finalRef);
+      setSummaryReady(true);
     } catch {
       const fallbackRef = saveInquiryToLocalBackup(
         `MTE-${Math.floor(100000 + Math.random() * 900000)}`
       );
-      setBookingReference(fallbackRef);
-      setServerPersisted(false);
-      setEmailNotified(false);
-      setSubmitError(
-        `Network error reaching the booking server. Your quote (#${fallbackRef}) has been preserved in your browser—please retry or send it directly via WhatsApp (+91 8001247778).`
-      );
-      setBookingConfirmed(false);
+      setEnquiryReference(fallbackRef);
+      setSummaryReady(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -741,6 +777,16 @@ export default function App() {
         </div>
       )}
 
+      {/* Travel Guide Reader Modal */}
+      <BlogReaderModal
+        story={activeStory}
+        onClose={() => setActiveStory(null)}
+        onOpenConsultation={() => {
+          setActiveStory(null);
+          setIsConsultationOpen(true);
+        }}
+      />
+
       {/* 24x7 HIMALAYAN EXPEDITION CONSULTATION MODAL */}
       <ConsultationModal
         isOpen={isConsultationOpen}
@@ -778,8 +824,10 @@ export default function App() {
           onClick={() => setDrawerOpen(false)}
         >
           <div
+            ref={drawerRef}
             data-lenis-prevent="true"
             onClick={(e) => e.stopPropagation()}
+            tabIndex={-1}
             style={{
               width: '100%',
               maxWidth: '960px',
@@ -790,6 +838,7 @@ export default function App() {
               flexDirection: 'column',
               overflow: 'hidden',
               borderLeft: '1px solid rgba(31, 38, 31, 0.18)',
+              outline: 'none',
             }}
           >
             {/* Top Bar */}
@@ -843,20 +892,20 @@ export default function App() {
             {/* Navigation Tabs */}
             <div
               style={{
-                display: 'flex',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                 borderBottom: '1px solid rgba(31, 38, 31, 0.14)',
                 backgroundColor: '#F6F4EF',
-                padding: '0 28px',
-                gap: '8px',
-                overflowX: 'auto',
+                padding: '0 16px',
+                gap: '4px',
               }}
             >
               {(
                 [
-                  { id: 'packages', label: `Tour Packages (${TOUR_PACKAGES.length})` },
-                  { id: 'hotels', label: `Luxury Stays (${LUXURY_HOTELS.length})` },
-                  { id: 'cabs', label: `Mountain Fleet (${TAXI_FLEET.length})` },
-                  { id: 'calculator', label: '10% VIP Quote & Booking' },
+                  { id: 'packages', label: `Packages (${TOUR_PACKAGES.length})` },
+                  { id: 'hotels', label: `Stays (${LUXURY_HOTELS.length})` },
+                  { id: 'cabs', label: `Fleet (${TAXI_FLEET.length})` },
+                  { id: 'calculator', label: '★ 10% VIP Quote' },
                 ] as { id: DrawerTab; label: string }[]
               ).map((tab) => {
                 const active = activeTab === tab.id;
@@ -866,17 +915,18 @@ export default function App() {
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
                     style={{
-                      padding: '14px 18px',
+                      padding: '12px 10px',
                       fontSize: '12px',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.04em',
                       textTransform: 'uppercase',
                       border: 'none',
-                      borderBottom: active ? '2px solid #FF4929' : '2px solid transparent',
-                      backgroundColor: 'transparent',
+                      borderBottom: active ? '3px solid #FF4929' : '3px solid transparent',
+                      backgroundColor: active ? 'rgba(255, 73, 41, 0.08)' : 'transparent',
                       color: active ? '#FF4929' : '#1F261F',
-                      fontWeight: active ? 600 : 400,
+                      fontWeight: active ? 700 : 500,
                       cursor: 'pointer',
-                      whiteSpace: 'nowrap',
+                      textAlign: 'center',
+                      minHeight: '44px',
                     }}
                   >
                     {tab.label}
@@ -937,20 +987,24 @@ export default function App() {
                         </button>
                       ))}
                     </div>
-                    <input
-                      type="text"
-                      placeholder="Search 16 packages (e.g., Lachung, Bhutan, Tiger Hill)..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      style={{
-                        padding: '8px 12px',
-                        fontSize: '13px',
-                        border: '1px solid rgba(31, 38, 31, 0.25)',
-                        backgroundColor: '#FFFFFF',
-                        color: '#1F261F',
-                        minWidth: '260px',
-                      }}
-                    />
+                    <div style={{ flex: '1 1 200px', minWidth: '180px', maxWidth: '100%' }}>
+                      <input
+                        type="text"
+                        aria-label="Search tour packages"
+                        placeholder="Search packages (e.g., Lachung, Bhutan)..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          fontSize: '13px',
+                          border: '1px solid rgba(31, 38, 31, 0.25)',
+                          backgroundColor: '#FFFFFF',
+                          color: '#1F261F',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Package List */}
@@ -1423,7 +1477,7 @@ export default function App() {
                         value={selectedPkgId}
                         onChange={(e) => {
                           setSelectedPkgId(e.target.value);
-                          setBookingConfirmed(false);
+                          setSummaryReady(false);
                         }}
                         style={{
                           width: '100%',
@@ -1650,11 +1704,11 @@ export default function App() {
                         }}
                       >
                         <div>{submitError}</div>
-                        {bookingReference && (
+                        {enquiryReference && (
                           <div style={{ marginTop: '6px' }}>
                             <a
                               href={`https://wa.me/918001247778?text=${encodeURIComponent(
-                                `Hello MyTravelExpert! Reference ${bookingReference} for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Name: ${customerName}, Phone: ${customerPhone}. Estimated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
+                                `Hello MyTravelExpert! Inquiry Summary (#${enquiryReference}) for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Name: ${customerName}, Phone: ${customerPhone}. Estimated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
                               )}`}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -1664,7 +1718,7 @@ export default function App() {
                                 textDecoration: 'underline',
                               }}
                             >
-                              Dispatch Reference #{bookingReference} via WhatsApp (+91 8001247778) →
+                              Open WhatsApp enquiry (#{enquiryReference}) →
                             </a>
                           </div>
                         )}
@@ -1823,72 +1877,61 @@ export default function App() {
                         Advance: {formatInr(Math.round(quote.finalTotal * 0.2))}
                       </div>
 
-                      {bookingConfirmed && (
+                      {summaryReady && (
                         <div
                           style={{
                             marginTop: '20px',
-                            padding: '14px',
-                            backgroundColor: 'rgba(255, 73, 41, 0.16)',
+                            padding: '16px',
+                            backgroundColor: 'rgba(255, 73, 41, 0.12)',
                             border: '1px solid #FF4929',
                             fontSize: '13px',
                           }}
                         >
-                          <div style={{ fontWeight: 700, color: '#FF4929', marginBottom: '4px' }}>
-                            ✓ Enquiry Recorded #{bookingReference} —{' '}
-                            {emailNotified
-                              ? 'Bagdogra Desk Notified by Email'
-                              : serverPersisted
-                              ? 'Saved to Cloud Database & Ready for Priority Dispatch'
-                              : 'Quote Prepared — Dispatch to Confirm'}
+                          <div style={{ fontWeight: 700, color: '#FF4929', marginBottom: '6px' }}>
+                            Your enquiry summary is ready. Continue in WhatsApp.
                           </div>
-                          <div style={{ marginBottom: '10px' }}>
-                            Thank you, <strong>{customerName}</strong>! Your custom VIP quote for{' '}
-                            <strong>{selectedPackage.title}</strong> ({travelDate}) has been logged
-                            under reference <strong>{bookingReference}</strong>.{' '}
-                            {emailNotified
-                              ? `An automated notification has been dispatched to our Bagdogra operations desk (${COMPANY_INFO.phone}) for callback on ${customerPhone}. You may also connect immediately via WhatsApp or Email:`
-                              : serverPersisted
-                              ? `Your enquiry is permanently recorded in our cloud booking database. For immediate instant priority, you can also send your quote reference directly to our Bagdogra travel desk (${COMPANY_INFO.phone}) via WhatsApp or Email below:`
-                              : `For immediate priority confirmation and callback on ${customerPhone}, please send your quote reference directly to our Bagdogra travel desk (${COMPANY_INFO.phone}) via WhatsApp or Email below:`}
+                          <div style={{ marginBottom: '12px', lineHeight: 1.5 }}>
+                            Enquiry Ref <strong>#{enquiryReference}</strong> prepared for{' '}
+                            <strong>{customerName}</strong> ({customerPhone}). Please choose a button below to open and deliver your quotation to our Bagdogra desk:
                           </div>
                           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                             <a
                               href={`https://wa.me/918001247778?text=${encodeURIComponent(
-                                `Hello MyTravelExpert! Reference ${bookingReference} for ${selectedPackage.title} (${guests} travellers, ${travelDate}). Name: ${customerName}, Phone: ${customerPhone}. Estimated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}`
+                                `Hello MyTravelExpert! Enquiry Summary (#${enquiryReference}):\n- Package: ${selectedPackage.title} (${selectedPackage.durationText})\n- Travel Date: ${travelDate}\n- Travellers: ${guests}\n- Vehicle: ${selectedCab ? selectedCab.name : 'Standard Included'}\n- VIP 10% Discount: ${vipDiscount ? 'Applied' : 'No'}\n- Calculated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}\n- Name: ${customerName}\n- Phone: ${customerPhone}\n${customerEmail ? `- Email: ${customerEmail}\n` : ''}- Notes: ${customNotes || 'None'}`
                               )}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{
                                 display: 'inline-block',
-                                padding: '8px 14px',
+                                padding: '10px 16px',
                                 backgroundColor: '#25D366',
                                 color: '#FFFFFF',
                                 fontSize: '12px',
                                 fontWeight: 600,
                                 textDecoration: 'none',
-                                borderRadius: '2px',
+                                borderRadius: '3px',
                               }}
                             >
-                              Send Quote on WhatsApp Now →
+                              Open WhatsApp enquiry
                             </a>
                             <a
                               href={`mailto:${COMPANY_INFO.email}?subject=${encodeURIComponent(
-                                `VIP Tour Inquiry ${bookingReference} — ${selectedPackage.title}`
+                                `Himalayan Tour Enquiry #${enquiryReference} — ${selectedPackage.title}`
                               )}&body=${encodeURIComponent(
-                                `Hello MyTravelExpert Bagdogra Desk,\n\nPlease find my tour inquiry details below:\n- Reference: ${bookingReference}\n- Name: ${customerName}\n- Phone/WhatsApp: ${customerPhone}\n- Email: ${customerEmail || 'Not provided'}\n- Package: ${selectedPackage.title} (${selectedPackage.durationText})\n- Preferred Travel Period: ${travelDate}\n- Guests: ${guests}\n- Estimated VIP Total: ₹${quote.finalTotal.toLocaleString('en-IN')}\n- Notes: ${customNotes || 'None'}\n\nPlease contact me to confirm availability and itinerary details.`
+                                `Hello MyTravelExpert Desk,\n\nPlease find my customized tour enquiry below:\n- Reference: #${enquiryReference}\n- Package: ${selectedPackage.title} (${selectedPackage.durationText})\n- Travel Date: ${travelDate}\n- Travellers: ${guests}\n- Vehicle Preference: ${selectedCab ? selectedCab.name : 'Standard Included'}\n- VIP 10% Discount: ${vipDiscount ? 'Yes' : 'No'}\n- Calculated Total: ₹${quote.finalTotal.toLocaleString('en-IN')}\n- Name: ${customerName}\n- Phone: ${customerPhone}\n- Email: ${customerEmail || 'Not provided'}\n- Notes: ${customNotes || 'None'}\n\nPlease share booking availability and confirmation.`
                               )}`}
                               style={{
                                 display: 'inline-block',
-                                padding: '8px 14px',
+                                padding: '10px 16px',
                                 backgroundColor: '#F6F4EF',
                                 color: '#1F261F',
                                 fontSize: '12px',
                                 fontWeight: 600,
                                 textDecoration: 'none',
-                                borderRadius: '2px',
+                                borderRadius: '3px',
                               }}
                             >
-                              Send Quote via Email →
+                              Open email enquiry
                             </a>
                           </div>
                         </div>
